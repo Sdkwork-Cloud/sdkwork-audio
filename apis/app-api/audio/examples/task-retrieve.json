@@ -1,0 +1,53 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/app/v3/api/audio/tasks/660e8400-e29b-41d4-a716-446655440001",
+    "headers": {
+      "Authorization": "Bearer <jwt-token>",
+      "Access-Token": "<access-token>"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "code": 0,
+      "message": "success",
+      "data": {
+        "taskId": "660e8400-e29b-41d4-a716-446655440001",
+        "operationType": "speech",
+        "status": "succeeded",
+        "progress": 1.0,
+        "requestParams": {
+          "text": "Hello, this is a test of the speech synthesis system.",
+          "voiceId": "550e8400-e29b-41d4-a716-446655440000",
+          "audioFormat": "mp3"
+        },
+        "resultMetadata": {
+          "durationMs": 2500,
+          "sampleRate": 24000,
+          "channels": 1
+        },
+        "artifacts": [
+          {
+            "artifactId": "aa0e8400-e29b-41d4-a716-446655440005",
+            "artifactKind": "audio",
+            "mediaKind": "speech",
+            "mimeType": "audio/mpeg",
+            "contentLength": 48000,
+            "durationMs": 2500,
+            "downloadUrl": "https://api.sdkwork.com/app/v3/api/audio/artifacts/aa0e8400-e29b-41d4-a716-446655440005/download"
+          }
+        ],
+        "createdAt": "2026-06-14T10:00:00Z",
+        "completedAt": "2026-06-14T10:00:02Z"
+      },
+      "metadata": {
+        "requestId": "bb0e8400-e29b-41d4-a716-446655440006",
+        "timestamp": "2026-06-14T10:00:05Z"
+      }
+    }
+  }
+}

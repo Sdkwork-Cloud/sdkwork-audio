@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # SDKWork Audio API Server
+  audio-api:
+    build:
+      context: ../..
+      dockerfile: deployments/docker/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - RUST_LOG=info
+      - DATABASE_URL=sqlite:/app/data/audio.db
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8080
+      - DRIVE_BASE_URL=http://drive-api:8081
+      - IAM_BASE_URL=http://iam-api:8082
+    volumes:
+      - audio-data:/app/data
+    depends_on:
+      - drive-api
+      - iam-api
+    restart: unless-stopped
+
+  # SDKWork Drive API (dependency)
+  drive-api:
+    image: sdkwork/drive-api:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - RUST_LOG=info
+    volumes:
+      - drive-data:/app/data
+    restart: unless-stopped
+
+  # SDKWork IAM API (dependency)
+  iam-api:
+    image: sdkwork/iam-api:latest
+    ports:
+      - "8082:8082"
+    environment:
+      - RUST_LOG=info
+    volumes:
+      - iam-data:/app/data
+    restart: unless-stopped
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  audio-data:
+  drive-data:
+  iam-data:
+  redis-data:

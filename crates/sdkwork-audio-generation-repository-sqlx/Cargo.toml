@@ -1,0 +1,21 @@
+[package]
+name = "sdkwork-audio-generation-repository-sqlx"
+version = "0.1.0"
+edition = "2021"
+description = "SDKWork Audio generation repository with SQLx"
+
+[dependencies]
+async-trait = "0.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+sdkwork-database-config = { workspace = true }
+sdkwork-database-sqlx = { workspace = true }
+sdkwork-audio-database-host = { workspace = true }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "any", "sqlite", "postgres"] }
+tokio = { version = "1.48", features = ["macros", "rt-multi-thread"] }
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+[dev-dependencies]
+tokio-test = "0.4"

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "kind": "sdkwork.component.spec",
+  "component": {
+    "name": "@sdkwork/audio-app-sdk",
+    "displayName": "Audio App SDK",
+    "version": "1.0.0",
+    "type": "generated-sdk",
+    "root": "sdkwork-audio-app-sdk",
+    "domain": "audio",
+    "capability": "audio-app-api",
+    "languages": [
+      "typescript",
+      "dart",
+      "python",
+      "go",
+      "java",
+      "kotlin",
+      "swift",
+      "csharp",
+      "flutter",
+      "rust",
+      "php",
+      "ruby"
+    ],
+    "generated": true,
+    "manifests": [
+      ".sdkwork-assembly.json"
+    ]
+  },
+  "canonicalSpecs": [
+    {
+      "file": "SDK_SPEC.md",
+      "path": "../../../sdkwork-specs/SDK_SPEC.md",
+      "purpose": "SDK generation and integration rules."
+    },
+    {
+      "file": "SDK_WORKSPACE_GENERATION_SPEC.md",
+      "path": "../../../sdkwork-specs/SDK_WORKSPACE_GENERATION_SPEC.md",
+      "purpose": "SDK workspace layout rules."
+    },
+    {
+      "file": "API_SPEC.md",
+      "path": "../../../sdkwork-specs/API_SPEC.md",
+      "purpose": "HTTP API contract rules."
+    }
+  ],
+  "contracts": {
+    "publicExports": [
+      "."
+    ],
+    "runtimeEntrypoints": [],
+    "routeManifest": null,
+    "sdkClients": [],
+    "events": [],
+    "configKeys": []
+  },
+  "sdkDependencies": [
+    {
+      "workspace": "clawrouter-open-sdk",
+      "role": "ai-audio-generation-provider-capability",
+      "required": true,
+      "dependencyMode": "consumer-sdk",
+      "apiPrefix": null,
+      "generatedTransportImportPolicy": "forbidden",
+      "packageByLanguage": {
+        "typescript": "@sdkwork/clawrouter-open-sdk"
+      }
+    },
+    {
+      "workspace": "sdkwork-drive-sdk",
+      "role": "audio-storage-capability",
+      "required": true,
+      "dependencyMode": "consumer-sdk",
+      "apiPrefix": null,
+      "generatedTransportImportPolicy": "forbidden",
+      "packageByLanguage": {
+        "typescript": "@sdkwork/drive-sdk"
+      }
+    },
+    {
+      "workspace": "sdkwork-iam-sdk",
+      "role": "authentication-capability",
+      "required": true,
+      "dependencyMode": "consumer-sdk",
+      "apiPrefix": null,
+      "generatedTransportImportPolicy": "forbidden",
+      "packageByLanguage": {
+        "typescript": "@sdkwork/iam-sdk"
+      }
+    }
+  ],
+  "verification": {
+    "commands": [
+      "node .\\bin\\publish-core.mjs --language typescript --project-dir . --action check",
+      "node .\\bin\\publish-core.mjs --language typescript --project-dir . --action build"
+    ]
+  }
+}

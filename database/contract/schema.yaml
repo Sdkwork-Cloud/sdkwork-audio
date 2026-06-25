@@ -1,0 +1,52 @@
+schema_version: 1
+kind: sdkwork.database.schema
+module_id: audio
+contract_version: 1.0.0
+owner_team: media-platform
+compliance_level: L2
+engines:
+  - postgres
+table_prefix: audio_
+tables:
+  - name: audio_provider_route
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_provider_route_capability
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_generation_task
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_task_event
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_audio_artifact
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_artifact_drive_sync
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_provider_webhook_event
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_webhook_delivery
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_request_log
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_voice
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_realtime_session
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_workspace
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_workspace_track
+    lifecycle_status: active
+    owner: media-platform
+  - name: audio_workspace_clip
+    lifecycle_status: active
+    owner: media-platform

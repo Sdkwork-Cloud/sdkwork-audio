@@ -1,0 +1,712 @@
+openapi: 3.1.2
+info:
+  title: SDKWork Audio Backend API
+  description: |
+    Backend API for SDKWork Audio application.
+    Provides provider management, task administration, webhook handling, analytics, and system management.
+  version: 0.1.0
+  contact:
+    name: SDKWork
+    url: https://sdkwork.com
+  license:
+    name: Proprietary
+    url: https://sdkwork.com/terms
+
+servers:
+  - url: https://api.sdkwork.com/backend/v3/api/audio
+    description: Production server
+  - url: https://api-dev.sdkwork.com/backend/v3/api/audio
+    description: Development server
+  - url: https://api-test.sdkwork.com/backend/v3/api/audio
+    description: Test server
+
+security:
+  - AuthToken: []
+  - AccessToken: []
+
+tags:
+  - name: providerRoutes
+    description: Provider route management
+  - name: tasks
+    description: Task administration
+  - name: webhooks
+    description: Webhook management
+  - name: analytics
+    description: Usage analytics
+  - name: moderation
+    description: Content moderation
+  - name: system
+    description: System management
+
+paths:
+  /provider-routes:
+    get:
+      operationId: providerRoutes.list
+      summary: List provider routes
+      description: List all provider routes.
+      tags:
+        - providerRoutes
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      parameters:
+        - $ref: '#/components/parameters/CursorPagination'
+      responses:
+        '200':
+          description: List of provider routes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderRouteListResponse'
+    post:
+      operationId: providerRoutes.create
+      summary: Create provider route
+      description: Create a new provider route.
+      tags:
+        - providerRoutes
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProviderRouteRequest'
+      responses:
+        '200':
+          description: Provider route created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderRouteResponse'
+
+  /provider-routes/{providerRouteId}:
+    get:
+      operationId: providerRoutes.retrieve
+      summary: Get provider route
+      description: Get details of a specific provider route.
+      tags:
+        - providerRoutes
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      parameters:
+        - name: providerRouteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Provider route details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderRouteResponse'
+    patch:
+      operationId: providerRoutes.update
+      summary: Update provider route
+      description: Update a provider route.
+      tags:
+        - providerRoutes
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      parameters:
+        - name: providerRouteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProviderRouteRequest'
+      responses:
+        '200':
+          description: Provider route updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderRouteResponse'
+
+  /tasks:
+    get:
+      operationId: tasks.list
+      summary: List tasks
+      description: List all tasks (admin).
+      tags:
+        - tasks
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      parameters:
+        - name: userId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by user
+        - name: operationType
+          in: query
+          schema:
+            type: string
+            enum: [speech, transcription, translation, sound_effect, music]
+          description: Filter by operation type
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
+          description: Filter by status
+        - $ref: '#/components/parameters/CursorPagination'
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListResponse'
+
+  /tasks/{taskId}:
+    get:
+      operationId: tasks.retrieve
+      summary: Get task details
+      description: Get details of a specific task (admin).
+      tags:
+        - tasks
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetailResponse'
+
+  /tasks/{taskId}/retry:
+    post:
+      operationId: tasks.retry
+      summary: Retry task
+      description: Retry a failed task.
+      tags:
+        - tasks
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task retry initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+
+  /tasks/{taskId}/reconcile:
+    post:
+      operationId: tasks.reconcile
+      summary: Reconcile task
+      description: Reconcile a stuck task.
+      tags:
+        - tasks
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task reconciliation initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+
+  /provider-webhooks/{providerCode}:
+    post:
+      operationId: providerWebhooks.accept
+      summary: Accept webhook
+      description: Accept a provider webhook.
+      tags:
+        - webhooks
+      security:
+        - ApiKey: []
+      parameters:
+        - name: providerCode
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook accepted
+
+  /webhook-events:
+    get:
+      operationId: webhookEvents.list
+      summary: List webhook events
+      description: List webhook events.
+      tags:
+        - webhooks
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      parameters:
+        - $ref: '#/components/parameters/CursorPagination'
+      responses:
+        '200':
+          description: List of webhook events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEventListResponse'
+
+  /webhook-events/{eventId}/replay:
+    post:
+      operationId: webhookEvents.replay
+      summary: Replay webhook event
+      description: Replay a webhook event.
+      tags:
+        - webhooks
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Webhook event replayed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEventResponse'
+
+  /analytics/usage:
+    get:
+      operationId: analytics.usage
+      summary: Get usage analytics
+      description: Get usage analytics.
+      tags:
+        - analytics
+      security:
+        - AuthToken: []
+        - AccessToken: []
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Start date
+        - name: endDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: End date
+        - name: groupBy
+          in: query
+          schema:
+            type: string
+            enum: [day, week, month]
+            default: day
+          description: Group by period
+        - name: operationType
+          in: query
+          schema:
+            type: string
+            enum: [speech, transcription, translation, sound_effect, music]
+          description: Filter by operation type
+      responses:
+        '200':
+          description: Usage analytics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageAnalyticsResponse'
+
+components:
+  securitySchemes:
+    AuthToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: JWT access token
+    AccessToken:
+      type: apiKey
+      in: header
+      name: Access-Token
+      description: Access token for API access
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for webhook authentication
+
+  parameters:
+    CursorPagination:
+      name: cursor
+      in: query
+      schema:
+        type: string
+      description: Pagination cursor
+
+  schemas:
+    CreateProviderRouteRequest:
+      type: object
+      required:
+        - providerCode
+        - providerName
+        - providerType
+        - capabilities
+      properties:
+        providerCode:
+          type: string
+          description: Provider code
+        providerName:
+          type: string
+          description: Provider name
+        providerType:
+          type: string
+          enum: [openai, elevenlabs, azure, google, custom]
+          description: Provider type
+        baseUrl:
+          type: string
+          format: uri
+          description: Base URL
+        apiKey:
+          type: string
+          description: API key
+        capabilities:
+          type: array
+          items:
+            type: string
+            enum: [speech, transcription, translation, sound_effect, music]
+          description: Capabilities
+        config:
+          type: object
+          description: Provider configuration
+
+    UpdateProviderRouteRequest:
+      type: object
+      properties:
+        providerName:
+          type: string
+          description: Provider name
+        baseUrl:
+          type: string
+          format: uri
+          description: Base URL
+        apiKey:
+          type: string
+          description: API key
+        capabilities:
+          type: array
+          items:
+            type: string
+            enum: [speech, transcription, translation, sound_effect, music]
+          description: Capabilities
+        config:
+          type: object
+          description: Provider configuration
+        status:
+          type: string
+          enum: [active, inactive, maintenance]
+          description: Status
+
+    ProviderRouteListResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProviderRoute'
+            nextCursor:
+              type: string
+            hasMore:
+              type: boolean
+
+    ProviderRouteResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        data:
+          $ref: '#/components/schemas/ProviderRoute'
+
+    ProviderRoute:
+      type: object
+      properties:
+        providerRouteId:
+          type: string
+          format: uuid
+        providerCode:
+          type: string
+        providerName:
+          type: string
+        providerType:
+          type: string
+          enum: [openai, elevenlabs, azure, google, custom]
+        baseUrl:
+          type: string
+          format: uri
+        capabilities:
+          type: array
+          items:
+            type: string
+            enum: [speech, transcription, translation, sound_effect, music]
+        status:
+          type: string
+          enum: [active, inactive, maintenance]
+        healthStatus:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TaskListResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaskSummary'
+            nextCursor:
+              type: string
+            hasMore:
+              type: boolean
+
+    TaskDetailResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        data:
+          $ref: '#/components/schemas/TaskDetail'
+
+    TaskResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        data:
+          type: object
+          properties:
+            taskId:
+              type: string
+              format: uuid
+            status:
+              type: string
+              enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
+
+    TaskSummary:
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        operationType:
+          type: string
+          enum: [speech, transcription, translation, sound_effect, music]
+        status:
+          type: string
+          enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    TaskDetail:
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        operationType:
+          type: string
+          enum: [speech, transcription, translation, sound_effect, music]
+        status:
+          type: string
+          enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
+        progress:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+        requestParams:
+          type: object
+        resultMetadata:
+          type: object
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Artifact'
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    Artifact:
+      type: object
+      properties:
+        artifactId:
+          type: string
+          format: uuid
+        artifactKind:
+          type: string
+          enum: [audio, text, subtitle, waveform, metadata]
+        mediaKind:
+          type: string
+          enum: [speech, transcription, translation, sound_effect, music]
+        mimeType:
+          type: string
+        contentLength:
+          type: integer
+        durationMs:
+          type: integer
+        downloadUrl:
+          type: string
+          format: uri
+
+    WebhookEventListResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/WebhookEvent'
+            nextCursor:
+              type: string
+            hasMore:
+              type: boolean
+
+    WebhookEventResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        data:
+          $ref: '#/components/schemas/WebhookEvent'
+
+    WebhookEvent:
+      type: object
+      properties:
+        eventId:
+          type: string
+          format: uuid
+        providerCode:
+          type: string
+        eventType:
+          type: string
+        payload:
+          type: object
+        status:
+          type: string
+          enum: [pending, processed, failed, replayed]
+        createdAt:
+          type: string
+          format: date-time
+
+    UsageAnalyticsResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        data:
+          type: object
+          properties:
+            totalRequests:
+              type: integer
+            totalDuration:
+              type: integer
+            totalCharacters:
+              type: integer
+            breakdown:
+              type: array
+              items:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  requests:
+                    type: integer
+                  duration:
+                    type: integer
+                  characters:
+                    type: integer

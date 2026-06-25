@@ -1,0 +1,185 @@
+{
+  "workspace": "sdkwork-audio-backend-sdk",
+  "title": "SDKWork Audio Backend API SDK",
+  "apiVersion": "1.0.0",
+  "openapiVersion": "3.1.2",
+  "authoritySpec": "openapi/sdkwork-audio-backend-api.openapi.yaml",
+  "generationInputSpec": "openapi/sdkwork-audio-backend-api.sdkgen.yaml",
+  "derivedSpecs": {
+    "default": "openapi/sdkwork-audio-backend-api.sdkgen.yaml"
+  },
+  "sdkOwner": "sdkwork-audio",
+  "apiAuthority": "sdkwork-audio-backend-api",
+  "discoverySurface": {
+    "sdkTarget": "backend",
+    "apiPrefix": "/backend/v3/api",
+    "schemaUrl": "/backend/v3/openapi.json",
+    "generatedProtocols": [
+      "http-openapi"
+    ],
+    "manualTransports": []
+  },
+  "languages": [
+    {
+      "language": "typescript",
+      "workspace": "sdkwork-audio-backend-sdk-typescript",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-typescript/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-typescript/generated/server-openapi/package.json",
+      "name": "@sdkwork/audio-backend-sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned TypeScript transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-typescript/generated/server-openapi"
+    },
+    {
+      "language": "dart",
+      "workspace": "sdkwork-audio-backend-sdk-dart",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-dart/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-dart/generated/server-openapi/pubspec.yaml",
+      "name": "sdkwork_audio_backend_sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned Dart transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-dart/generated/server-openapi"
+    },
+    {
+      "language": "python",
+      "workspace": "sdkwork-audio-backend-sdk-python",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-python/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-python/generated/server-openapi/pyproject.toml",
+      "name": "sdkwork-audio-backend-sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned Python transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-python/generated/server-openapi"
+    },
+    {
+      "language": "go",
+      "workspace": "sdkwork-audio-backend-sdk-go",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-go/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-go/generated/server-openapi/go.mod",
+      "name": "github.com/sdkwork/sdkwork-audio-backend-sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned Go transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-go/generated/server-openapi"
+    },
+    {
+      "language": "java",
+      "workspace": "sdkwork-audio-backend-sdk-java",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-java/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-java/generated/server-openapi/pom.xml",
+      "name": "com.sdkwork:sdkwork-audio-backend-sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned Java transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-java/generated/server-openapi"
+    },
+    {
+      "language": "kotlin",
+      "workspace": "sdkwork-audio-backend-sdk-kotlin",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-kotlin/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-kotlin/generated/server-openapi/build.gradle.kts",
+      "name": "com.sdkwork:sdkwork-audio-backend-sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned Kotlin transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-kotlin/generated/server-openapi"
+    },
+    {
+      "language": "swift",
+      "workspace": "sdkwork-audio-backend-sdk-swift",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-swift/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-swift/generated/server-openapi/Package.swift",
+      "name": "sdkwork-audio-backend-sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned Swift transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-swift/generated/server-openapi"
+    },
+    {
+      "language": "csharp",
+      "workspace": "sdkwork-audio-backend-sdk-csharp",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-csharp/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-csharp/generated/server-openapi/SDKWork.Audio.BackendSdk.csproj",
+      "name": "SDKWork.Audio.BackendSdk",
+      "version": "1.0.0",
+      "description": "Generator-owned C# transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-csharp/generated/server-openapi"
+    },
+    {
+      "language": "flutter",
+      "workspace": "sdkwork-audio-backend-sdk-flutter",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-flutter/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-flutter/generated/server-openapi/pubspec.yaml",
+      "name": "sdkwork_audio_backend_sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned Flutter transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-flutter/generated/server-openapi"
+    },
+    {
+      "language": "rust",
+      "workspace": "sdkwork-audio-backend-sdk-rust",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-rust/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-rust/generated/server-openapi/Cargo.toml",
+      "name": "sdkwork-audio-backend-sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned Rust transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-rust/generated/server-openapi"
+    },
+    {
+      "language": "php",
+      "workspace": "sdkwork-audio-backend-sdk-php",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-php/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-php/generated/server-openapi/composer.json",
+      "name": "sdkwork/audio-backend-sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned PHP transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-php/generated/server-openapi"
+    },
+    {
+      "language": "ruby",
+      "workspace": "sdkwork-audio-backend-sdk-ruby",
+      "generationState": "materialized",
+      "releaseState": "not_published",
+      "packagePath": "sdkwork-audio-backend-sdk-ruby/generated/server-openapi",
+      "manifestPath": "sdkwork-audio-backend-sdk-ruby/generated/server-openapi/sdkwork-audio-backend-sdk.gemspec",
+      "name": "sdkwork-audio-backend-sdk",
+      "version": "1.0.0",
+      "description": "Generator-owned Ruby transport SDK for SDKWork Audio Backend API.",
+      "generatedPath": "sdkwork-audio-backend-sdk-ruby/generated/server-openapi"
+    }
+  ],
+  "sdkDependencies": [
+    {
+      "workspace": "sdkwork-iam-sdk",
+      "role": "authentication-capability",
+      "required": true,
+      "dependencyMode": "consumer-sdk",
+      "apiPrefix": null,
+      "generatedTransportImportPolicy": "forbidden",
+      "packageByLanguage": {
+        "typescript": "@sdkwork/iam-sdk"
+      }
+    }
+  ],
+  "metadata": {
+    "managedBy": "sdks/materialize-audio-v3-openapi-boundaries.mjs",
+    "standardVersion": "2026-06-14"
+  }
+}
