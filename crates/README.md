@@ -7,8 +7,8 @@ This directory contains Rust crates for the Audio application.
 ```
 crates/
 ├── README.md
-├── sdkwork-router-audio-app-api/        # App API route definitions
-├── sdkwork-router-audio-backend-api/    # Backend API route definitions
+├── sdkwork-routes-audio-app-api/        # App API route definitions
+├── sdkwork-routes-audio-backend-api/    # Backend API route definitions
 ├── sdkwork-audio-artifact-drive-service/ # Drive integration
 ├── sdkwork-audio-generation-repository-sqlx/ # Database storage
 ├── sdkwork-audio-realtime-rust/         # Real-time processing

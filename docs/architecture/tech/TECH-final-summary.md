@@ -42,8 +42,8 @@ The SDKWork Audio Application has been fully aligned with sdkwork-specs standard
 
 ### 5. Rust Implementation (100%)
 - ✅ 6 Rust crates with complete structure
-- ✅ sdkwork-router-audio-app-api (15 operations)
-- ✅ sdkwork-router-audio-backend-api (12 operations)
+- ✅ sdkwork-routes-audio-app-api (15 operations)
+- ✅ sdkwork-routes-audio-backend-api (12 operations)
 - ✅ sdkwork-audio-generation-repository-sqlx (models and repositories)
 - ✅ sdkwork-audio-artifact-drive-service (drive integration)
 - ✅ sdkwork-audio-realtime-rust (real-time processing)

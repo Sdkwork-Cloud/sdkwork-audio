@@ -11,7 +11,7 @@ This document describes the implementation of the sound effect service, which pr
 ┌─────────────────────────────────────────────────────────────┐
 │                    API Layer                                  │
 │  ┌─────────────────────────────────────────────────────────┐ │
-│  │  sdkwork-router-audio-app-api                          │ │
+│  │  sdkwork-routes-audio-app-api                          │ │
 │  │  - POST /app/v3/api/audio/sound-effects                │ │
 │  │  - GET /app/v3/api/audio/sound-effects/{taskId}        │ │
 │  │  - GET /app/v3/api/audio/sound-effects/presets         │ │

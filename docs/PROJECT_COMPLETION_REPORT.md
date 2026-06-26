@@ -62,8 +62,8 @@ The SDKWork Audio Application has been successfully implemented with all core se
 ┌─────────────────────────────────────────────────────────────┐
 │                    API Layer                                  │
 │  ┌─────────────────────────────────────────────────────────┐ │
-│  │  sdkwork-router-audio-app-api                          │ │
-│  │  sdkwork-router-audio-backend-api                      │ │
+│  │  sdkwork-routes-audio-app-api                          │ │
+│  │  sdkwork-routes-audio-backend-api                      │ │
 │  └─────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
                               │

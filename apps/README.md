@@ -1,34 +1,39 @@
-# SDKWork Audio - Application Roots
+# apps/
 
-This directory contains independently runnable application roots and app surfaces.
+Application: sdkwork-audio
+Status: active
+Owner: SDKWork maintainers
+Specs: APPLICATION_SPEC.md, SDKWORK_WORKSPACE_SPEC.md
 
-## Structure
+## Primary App Surface
 
-```
-apps/
-├── README.md
-└── <app-surface-root>/
-    ├── README.md
-    ├── sdkwork.app.config.json
-    ├── src/ | lib/ | App/ | entry/
-    ├── packages/
-    └── config/
-```
+The repository root is the primary runnable app surface.
+The repository root `sdkwork.app.config.json` governs the primary application manifest.
 
-## Purpose
+## Directory Index
 
-- Application shells and surfaces
-- Runnable demos and examples
-- Deployable application compositions
+| Directory | Surface role | Runnable | Purpose | Entry |
+| --- | --- | --- | --- | --- |
+| _none_ | n/a | no | No child application roots are checked in under `apps/` yet. | n/a |
+
+## Allowed Content
+
+- Selected language/architecture application roots with `README.md`, `AGENTS.md`, `.sdkwork/`, and `specs/` when authored packages exist.
+- Architecture-local `packages/`, `config/`, `src/`, `lib/`, `App/`, or `entry/` directories required by the owning architecture standard.
+
+## Forbidden Content
+
+- Repository-root API contracts, generated SDK workspaces, Rust crates, or deployment descriptors moved under `apps/`.
+- Runtime secrets, user-private state, generated SDK transport output, or cross-application copied business logic.
 
 ## Related Specs
 
-- `../sdkwork-specs/APPLICATION_SPEC.md`: Application modularization rules.
-- `../sdkwork-specs/APP_CLIENT_ARCHITECTURE_ALIGNMENT_SPEC.md`: Cross-client architecture alignment.
-- `../sdkwork-specs/APP_PC_ARCHITECTURE_SPEC.md`: PC application root architecture.
-- `../sdkwork-specs/APP_H5_ARCHITECTURE_SPEC.md`: H5/Capacitor application root architecture.
+- `../sdkwork-specs/APPLICATION_SPEC.md`
+- `../sdkwork-specs/SDKWORK_WORKSPACE_SPEC.md`
+- `../sdkwork-specs/APP_CLIENT_ARCHITECTURE_ALIGNMENT_SPEC.md`
 
 ## Verification
 
-- Application build and test
-- SDK integration verification
+```bash
+node ../sdkwork-specs/tools/check-apps-directory-index.mjs --root .
+```

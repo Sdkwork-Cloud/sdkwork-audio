@@ -11,7 +11,7 @@ This document describes the implementation of the transcription service, which p
 ┌─────────────────────────────────────────────────────────────┐
 │                    API Layer                                  │
 │  ┌─────────────────────────────────────────────────────────┐ │
-│  │  sdkwork-router-audio-app-api                          │ │
+│  │  sdkwork-routes-audio-app-api                          │ │
 │  │  - POST /app/v3/api/audio/transcriptions               │ │
 │  │  - GET /app/v3/api/audio/transcriptions/{taskId}       │ │
 │  │  - GET /app/v3/api/audio/transcriptions/{taskId}/segments│

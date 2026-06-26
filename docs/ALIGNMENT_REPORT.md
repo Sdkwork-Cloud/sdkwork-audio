@@ -201,8 +201,8 @@ apis/
 
 | Crate | Status | Notes |
 |-------|--------|-------|
-| `sdkwork-router-audio-app-api` | ✅ Created | App API route definitions with 15 operations |
-| `sdkwork-router-audio-backend-api` | ✅ Created | Backend API route definitions with 12 operations |
+| `sdkwork-routes-audio-app-api` | ✅ Created | App API route definitions with 15 operations |
+| `sdkwork-routes-audio-backend-api` | ✅ Created | Backend API route definitions with 12 operations |
 | `sdkwork-audio-artifact-drive-service` | ✅ Created | Drive integration with mock implementation |
 | `sdkwork-audio-generation-repository-sqlx` | ✅ Created | Database storage with migrations and repositories |
 | `sdkwork-audio-realtime-rust` | ✅ Created | Real-time processing with mock implementation |
@@ -212,7 +212,7 @@ apis/
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| Route crates | ✅ Compliant | `sdkwork-router-<capability>-<surface>` |
+| Route crates | ✅ Compliant | `sdkwork-routes-<capability>-<surface>` |
 | Service crates | ✅ Compliant | `sdkwork-<domain>-<capability>-service` |
 | Repository crates | ✅ Compliant | `sdkwork-<domain>-<capability>-repository-sqlx` |
 

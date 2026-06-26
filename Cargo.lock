@@ -1331,7 +1331,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sdkwork-router-audio-app-api"
+name = "sdkwork-routes-audio-app-api"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -1341,7 +1341,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sdkwork-router-audio-backend-api"
+name = "sdkwork-routes-audio-backend-api"
 version = "0.1.0"
 dependencies = [
  "serde",

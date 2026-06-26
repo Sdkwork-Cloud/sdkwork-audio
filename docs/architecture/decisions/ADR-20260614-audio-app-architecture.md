@@ -32,8 +32,8 @@ sdkwork-audio/
 ├── crates/
 │   ├── sdkwork-audio-core-rust/              # Domain models & business logic
 │   ├── sdkwork-audio-storage-sqlx-rust/      # SQLite/PostgreSQL storage
-│   ├── sdkwork-router-audio-app-api/         # App API route definitions
-│   ├── sdkwork-router-audio-backend-api/     # Backend API route definitions
+│   ├── sdkwork-routes-audio-app-api/         # App API route definitions
+│   ├── sdkwork-routes-audio-backend-api/     # Backend API route definitions
 │   ├── sdkwork-audio-realtime-rust/          # Real-time processing
 │   ├── sdkwork-audio-ai-engine-rust/         # AI engine integration
 │   └── sdkwork-audio-drive-service/          # Drive integration

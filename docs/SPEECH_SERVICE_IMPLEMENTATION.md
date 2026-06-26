@@ -10,7 +10,7 @@ This document describes the implementation of the speech synthesis service, whic
 ┌─────────────────────────────────────────────────────────────┐
 │                    API Layer                                  │
 │  ┌─────────────────────────────────────────────────────────┐ │
-│  │  sdkwork-router-audio-app-api                          │ │
+│  │  sdkwork-routes-audio-app-api                          │ │
 │  │  - POST /app/v3/api/audio/speech                       │ │
 │  │  - GET /app/v3/api/audio/speech/voices                 │ │
 │  └─────────────────────────────────────────────────────────┘ │

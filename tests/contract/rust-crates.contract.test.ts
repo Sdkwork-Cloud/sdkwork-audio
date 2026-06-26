@@ -12,8 +12,8 @@ describe('Rust Crates Contracts', () => {
   const cratesPath = path.resolve(__dirname, '../../crates');
 
   const expectedCrates = [
-    'sdkwork-router-audio-app-api',
-    'sdkwork-router-audio-backend-api',
+    'sdkwork-routes-audio-app-api',
+    'sdkwork-routes-audio-backend-api',
     'sdkwork-audio-artifact-drive-service',
     'sdkwork-audio-generation-repository-sqlx',
     'sdkwork-audio-realtime-rust',
@@ -83,10 +83,10 @@ describe('Rust Crates Contracts', () => {
 
   describe('Naming Compliance', () => {
     it('should have route crates with correct naming', () => {
-      const routeCrates = expectedCrates.filter((c) => c.startsWith('sdkwork-router-'));
+      const routeCrates = expectedCrates.filter((c) => c.startsWith('sdkwork-routes-'));
       expect(routeCrates.length).toBe(2);
-      expect(routeCrates).toContain('sdkwork-router-audio-app-api');
-      expect(routeCrates).toContain('sdkwork-router-audio-backend-api');
+      expect(routeCrates).toContain('sdkwork-routes-audio-app-api');
+      expect(routeCrates).toContain('sdkwork-routes-audio-backend-api');
     });
 
     it('should have repository crate with correct naming', () => {

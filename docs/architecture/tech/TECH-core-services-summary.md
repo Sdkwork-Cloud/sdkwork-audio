@@ -146,7 +146,7 @@ This document summarizes the implementation of all core audio services in the SD
 ┌─────────────────────────────────────────────────────────────┐
 │                    API Layer                                  │
 │  ┌─────────────────────────────────────────────────────────┐ │
-│  │  sdkwork-router-audio-app-api                          │ │
+│  │  sdkwork-routes-audio-app-api                          │ │
 │  │  - Speech, Transcription, Translation, Sound Effects   │ │
 │  └─────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘

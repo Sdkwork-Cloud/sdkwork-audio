@@ -11,7 +11,7 @@ This document describes the implementation of the translation service, which pro
 ┌─────────────────────────────────────────────────────────────┐
 │                    API Layer                                  │
 │  ┌─────────────────────────────────────────────────────────┐ │
-│  │  sdkwork-router-audio-app-api                          │ │
+│  │  sdkwork-routes-audio-app-api                          │ │
 │  │  - POST /app/v3/api/audio/translations                 │ │
 │  │  - GET /app/v3/api/audio/translations/{taskId}         │ │
 │  │  - GET /app/v3/api/audio/translations/languages        │ │

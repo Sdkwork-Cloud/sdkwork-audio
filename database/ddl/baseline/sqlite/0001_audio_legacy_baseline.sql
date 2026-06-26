@@ -1,0 +1,384 @@
+-- Consolidated legacy baseline for sdkwork-audio database module.
+-- Review and replace with contract-first migrations.
+
+-- source: crates/sdkwork-audio-generation-repository-sqlx/migrations/0001_audio_core.sql
+
+-- SDKWork Audio Database Schema
+-- Version: 2026-06-14
+-- Migration: 0001_audio_core.sql
+
+-- Provider Route Table
+CREATE TABLE IF NOT EXISTS audio_provider_route (
+  id BIGINT PRIMARY KEY,
+  route_key VARCHAR(128) NOT NULL,
+  route_name VARCHAR(128) NOT NULL,
+  provider_id VARCHAR(64) NOT NULL,
+  provider_type VARCHAR(64) NOT NULL,
+  client_protocol VARCHAR(64) NOT NULL,
+  upstream_protocol VARCHAR(64) NOT NULL,
+  upstream_config_json TEXT NOT NULL,
+  capabilities_json TEXT NOT NULL,
+  enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  health_status VARCHAR(32) NOT NULL DEFAULT 'healthy',
+  managed_by VARCHAR(32) NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_provider_route_key UNIQUE (route_key)
+);
+
+-- Provider Route Capability Table
+CREATE TABLE IF NOT EXISTS audio_provider_route_capability (
+  id BIGINT PRIMARY KEY,
+  route_id BIGINT NOT NULL,
+  capability VARCHAR(64) NOT NULL,
+  operation_set_json TEXT NOT NULL,
+  streaming BOOLEAN NOT NULL DEFAULT FALSE,
+  timeout_ms BIGINT,
+  request_policy_ref VARCHAR(128),
+  response_policy_ref VARCHAR(128),
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_route_capability UNIQUE (route_id, capability)
+);
+
+-- Generation Task Table
+CREATE TABLE IF NOT EXISTS audio_generation_task (
+  id BIGINT PRIMARY KEY,
+  task_no VARCHAR(64) NOT NULL,
+  tenant_id BIGINT NOT NULL DEFAULT 0,
+  organization_id BIGINT NOT NULL DEFAULT 0,
+  user_id BIGINT NOT NULL DEFAULT 0,
+  operation_type VARCHAR(32) NOT NULL,
+  provider_code VARCHAR(64) NOT NULL,
+  provider_route_id BIGINT,
+  model VARCHAR(128),
+  provider_task_id VARCHAR(128),
+  idempotency_key VARCHAR(128),
+  input_hash VARCHAR(128),
+  status VARCHAR(32) NOT NULL,
+  progress INTEGER NOT NULL DEFAULT 0,
+  request_json TEXT NOT NULL,
+  normalized_options_json TEXT,
+  provider_request_json TEXT,
+  provider_response_json TEXT,
+  result_json TEXT,
+  error_code VARCHAR(128),
+  error_message TEXT,
+  callback_url TEXT,
+  callback_status VARCHAR(32),
+  submitted_at TIMESTAMP,
+  completed_at TIMESTAMP,
+  expires_at TIMESTAMP,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_generation_task_no UNIQUE (task_no),
+  CONSTRAINT uk_audio_task_idempotency UNIQUE (tenant_id, operation_type, idempotency_key),
+  CONSTRAINT uk_audio_task_provider_task UNIQUE (provider_code, provider_task_id)
+);
+
+-- Task Event Table
+CREATE TABLE IF NOT EXISTS audio_task_event (
+  id BIGINT PRIMARY KEY,
+  event_no VARCHAR(64) NOT NULL,
+  task_id BIGINT NOT NULL,
+  event_type VARCHAR(64) NOT NULL,
+  from_status VARCHAR(32),
+  to_status VARCHAR(32),
+  provider_code VARCHAR(64),
+  provider_event_id VARCHAR(128),
+  provider_task_id VARCHAR(128),
+  payload_hash VARCHAR(128),
+  payload_json TEXT NOT NULL,
+  received_at TIMESTAMP NOT NULL,
+  processed_at TIMESTAMP,
+  status VARCHAR(32) NOT NULL,
+  message TEXT,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_task_event_no UNIQUE (event_no),
+  CONSTRAINT uk_audio_task_event_provider UNIQUE (provider_code, provider_event_id)
+);
+
+-- Audio Artifact Table
+CREATE TABLE IF NOT EXISTS audio_audio_artifact (
+  id BIGINT PRIMARY KEY,
+  artifact_no VARCHAR(64) NOT NULL,
+  task_id BIGINT,
+  request_id VARCHAR(64),
+  kind VARCHAR(32) NOT NULL,
+  artifact_type VARCHAR(32),
+  title VARCHAR(256),
+  voice_id VARCHAR(128),
+  provider_code VARCHAR(64),
+  provider_asset_id VARCHAR(128),
+  artifact_index INTEGER NOT NULL DEFAULT 0,
+  format VARCHAR(32),
+  mime_type VARCHAR(128),
+  duration_seconds INTEGER,
+  checksum_json TEXT,
+  transcript_text TEXT,
+  translation_text TEXT,
+  media_resource_json TEXT NOT NULL,
+  resource_snapshot_json TEXT,
+  status VARCHAR(32) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_audio_artifact_no UNIQUE (artifact_no)
+);
+
+-- Artifact Drive Sync Table
+CREATE TABLE IF NOT EXISTS audio_artifact_drive_sync (
+  id BIGINT PRIMARY KEY,
+  sync_no VARCHAR(64) NOT NULL,
+  task_id BIGINT NOT NULL,
+  artifact_id BIGINT NOT NULL,
+  tenant_id BIGINT NOT NULL DEFAULT 0,
+  organization_id BIGINT NOT NULL DEFAULT 0,
+  user_id BIGINT NOT NULL DEFAULT 0,
+  anonymous_id VARCHAR(128),
+  actor_type VARCHAR(32) NOT NULL,
+  provider_code VARCHAR(64),
+  provider_asset_id VARCHAR(128),
+  artifact_index INTEGER NOT NULL DEFAULT 0,
+  source_uri TEXT,
+  source_hash VARCHAR(128),
+  drive_space_type VARCHAR(32) NOT NULL,
+  drive_space_id VARCHAR(128),
+  drive_node_id VARCHAR(128),
+  drive_upload_item_id VARCHAR(128),
+  drive_upload_session_id VARCHAR(128),
+  drive_resource_json TEXT,
+  sync_status VARCHAR(32) NOT NULL,
+  error_code VARCHAR(128),
+  error_message TEXT,
+  scheduled_at TIMESTAMP,
+  uploaded_at TIMESTAMP,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_artifact_drive_sync_no UNIQUE (sync_no),
+  CONSTRAINT uk_audio_artifact_drive_sync_task_index UNIQUE (task_id, artifact_index),
+  CONSTRAINT uk_audio_artifact_drive_sync_artifact UNIQUE (artifact_id)
+);
+
+-- Provider Webhook Event Table
+CREATE TABLE IF NOT EXISTS audio_provider_webhook_event (
+  id BIGINT PRIMARY KEY,
+  event_no VARCHAR(64) NOT NULL,
+  provider_code VARCHAR(64) NOT NULL,
+  event_id VARCHAR(128) NOT NULL,
+  task_id BIGINT,
+  provider_task_id VARCHAR(128),
+  signature_status VARCHAR(32) NOT NULL,
+  payload_hash VARCHAR(128) NOT NULL,
+  payload_json TEXT NOT NULL,
+  processing_status VARCHAR(32) NOT NULL,
+  attempt_count INTEGER NOT NULL DEFAULT 0,
+  received_at TIMESTAMP NOT NULL,
+  processed_at TIMESTAMP,
+  error_summary TEXT,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_provider_webhook_event_no UNIQUE (event_no),
+  CONSTRAINT uk_audio_provider_webhook_event UNIQUE (provider_code, event_id)
+);
+
+-- Webhook Delivery Table
+CREATE TABLE IF NOT EXISTS audio_webhook_delivery (
+  id BIGINT PRIMARY KEY,
+  delivery_no VARCHAR(64) NOT NULL,
+  task_id BIGINT NOT NULL,
+  event_type VARCHAR(64) NOT NULL,
+  target_url TEXT NOT NULL,
+  delivery_status VARCHAR(32) NOT NULL,
+  attempt_count INTEGER NOT NULL DEFAULT 0,
+  last_status_code INTEGER,
+  last_error TEXT,
+  next_retry_at TIMESTAMP,
+  delivered_at TIMESTAMP,
+  payload_json TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_webhook_delivery_no UNIQUE (delivery_no)
+);
+
+-- Request Log Table
+CREATE TABLE IF NOT EXISTS audio_request_log (
+  id BIGINT PRIMARY KEY,
+  request_no VARCHAR(64) NOT NULL,
+  tenant_id BIGINT NOT NULL DEFAULT 0,
+  organization_id BIGINT NOT NULL DEFAULT 0,
+  user_id BIGINT NOT NULL DEFAULT 0,
+  task_id BIGINT,
+  provider_code VARCHAR(64),
+  request_method VARCHAR(32) NOT NULL,
+  request_url TEXT NOT NULL,
+  request_headers_json TEXT,
+  request_body_json TEXT,
+  response_status INTEGER,
+  response_headers_json TEXT,
+  response_body_json TEXT,
+  duration_ms BIGINT,
+  error_code VARCHAR(128),
+  error_message TEXT,
+  created_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_request_log_no UNIQUE (request_no)
+);
+
+-- Voice Table
+CREATE TABLE IF NOT EXISTS audio_voice (
+  id BIGINT PRIMARY KEY,
+  voice_no VARCHAR(64) NOT NULL,
+  tenant_id BIGINT NOT NULL DEFAULT 0,
+  organization_id BIGINT NOT NULL DEFAULT 0,
+  user_id BIGINT NOT NULL DEFAULT 0,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  language VARCHAR(10) NOT NULL,
+  gender VARCHAR(20),
+  voice_type VARCHAR(50) NOT NULL DEFAULT 'prebuilt',
+  provider_code VARCHAR(64),
+  provider_voice_id VARCHAR(255),
+  provider_config_json TEXT,
+  clone_reference_url VARCHAR(1024),
+  clone_parameters_json TEXT,
+  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  is_public BOOLEAN DEFAULT FALSE,
+  usage_count BIGINT DEFAULT 0,
+  quality_score FLOAT,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_voice_no UNIQUE (voice_no)
+);
+
+-- Real-time Session Table
+CREATE TABLE IF NOT EXISTS audio_realtime_session (
+  id BIGINT PRIMARY KEY,
+  session_no VARCHAR(64) NOT NULL,
+  tenant_id BIGINT NOT NULL DEFAULT 0,
+  organization_id BIGINT NOT NULL DEFAULT 0,
+  user_id BIGINT NOT NULL DEFAULT 0,
+  session_type VARCHAR(50) NOT NULL,
+  title VARCHAR(255),
+  language VARCHAR(10),
+  target_language VARCHAR(10),
+  enable_translation BOOLEAN DEFAULT FALSE,
+  enable_speaker_diarization BOOLEAN DEFAULT FALSE,
+  connection_id VARCHAR(255),
+  websocket_url VARCHAR(1024),
+  status VARCHAR(50) NOT NULL DEFAULT 'created',
+  participant_count INTEGER DEFAULT 0,
+  max_participants INTEGER DEFAULT 10,
+  started_at TIMESTAMP,
+  ended_at TIMESTAMP,
+  duration_ms BIGINT,
+  is_recording BOOLEAN DEFAULT FALSE,
+  recording_url VARCHAR(1024),
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_realtime_session_no UNIQUE (session_no)
+);
+
+-- Workspace Table
+CREATE TABLE IF NOT EXISTS audio_workspace (
+  id BIGINT PRIMARY KEY,
+  workspace_no VARCHAR(64) NOT NULL,
+  tenant_id BIGINT NOT NULL DEFAULT 0,
+  organization_id BIGINT NOT NULL DEFAULT 0,
+  user_id BIGINT NOT NULL DEFAULT 0,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  settings_json TEXT,
+  is_public BOOLEAN DEFAULT FALSE,
+  collaborator_count INTEGER DEFAULT 0,
+  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_workspace_no UNIQUE (workspace_no)
+);
+
+-- Workspace Track Table
+CREATE TABLE IF NOT EXISTS audio_workspace_track (
+  id BIGINT PRIMARY KEY,
+  track_no VARCHAR(64) NOT NULL,
+  workspace_id BIGINT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  track_index INTEGER NOT NULL DEFAULT 0,
+  settings_json TEXT,
+  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_workspace_track_no UNIQUE (track_no),
+  CONSTRAINT uk_audio_workspace_track_index UNIQUE (workspace_id, track_index)
+);
+
+-- Workspace Clip Table
+CREATE TABLE IF NOT EXISTS audio_workspace_clip (
+  id BIGINT PRIMARY KEY,
+  clip_no VARCHAR(64) NOT NULL,
+  track_id BIGINT NOT NULL,
+  artifact_id BIGINT,
+  name VARCHAR(255),
+  start_ms BIGINT NOT NULL,
+  end_ms BIGINT NOT NULL,
+  waveform_data_json TEXT,
+  settings_json TEXT,
+  status VARCHAR(50) NOT NULL DEFAULT 'active',
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  version BIGINT NOT NULL DEFAULT 0,
+  CONSTRAINT uk_audio_workspace_clip_no UNIQUE (clip_no)
+);
+
+-- Indexes
+CREATE INDEX idx_audio_generation_task_tenant_user ON audio_generation_task(tenant_id, user_id);
+CREATE INDEX idx_audio_generation_task_status ON audio_generation_task(tenant_id, status);
+CREATE INDEX idx_audio_generation_task_operation ON audio_generation_task(operation_type);
+CREATE INDEX idx_audio_generation_task_provider ON audio_generation_task(provider_code, provider_task_id);
+CREATE INDEX idx_audio_generation_task_created ON audio_generation_task(tenant_id, created_at DESC);
+
+CREATE INDEX idx_audio_task_event_task ON audio_task_event(task_id, created_at DESC);
+CREATE INDEX idx_audio_task_event_type ON audio_task_event(event_type);
+
+CREATE INDEX idx_audio_audio_artifact_task ON audio_audio_artifact(task_id, artifact_index);
+CREATE INDEX idx_audio_audio_artifact_tenant ON audio_audio_artifact(tenant_id);
+
+CREATE INDEX idx_audio_artifact_drive_sync_artifact ON audio_artifact_drive_sync(artifact_id);
+CREATE INDEX idx_audio_artifact_drive_sync_status ON audio_artifact_drive_sync(sync_status);
+
+CREATE INDEX idx_audio_voice_tenant ON audio_voice(tenant_id, status);
+CREATE INDEX idx_audio_voice_language ON audio_voice(language);
+
+CREATE INDEX idx_audio_realtime_session_user ON audio_realtime_session(user_id, status);
+CREATE INDEX idx_audio_realtime_session_tenant ON audio_realtime_session(tenant_id, created_at DESC);
+
+CREATE INDEX idx_audio_workspace_user ON audio_workspace(user_id, status);
+CREATE INDEX idx_audio_workspace_tenant ON audio_workspace(tenant_id, created_at DESC);

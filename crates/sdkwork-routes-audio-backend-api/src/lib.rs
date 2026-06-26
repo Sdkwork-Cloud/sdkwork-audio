@@ -162,3 +162,7 @@ pub const API_VERSION: &str = "v3";
 pub fn get_full_path(path: &str) -> String {
     format!("{}{}", API_PREFIX, path)
 }
+
+pub fn gateway_mount() -> axum::Router {
+    axum::Router::new()
+}
