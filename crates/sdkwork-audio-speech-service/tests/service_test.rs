@@ -495,7 +495,7 @@ fn create_service() -> SpeechServiceImpl {
 
 fn create_request() -> SpeechSynthesisRequest {
     SpeechSynthesisRequest {
-        tenant_id: 1,
+        tenant_id: 100_001,
         organization_id: 0,
         user_id: 100,
         text: "Hello, world!".to_string(),
@@ -550,7 +550,7 @@ async fn test_list_voices_empty() {
     let service = create_service();
 
     let request = VoiceListRequest {
-        tenant_id: 1,
+        tenant_id: 100_001,
         user_id: None,
         language: None,
         gender: None,

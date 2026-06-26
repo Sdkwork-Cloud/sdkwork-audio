@@ -43,7 +43,7 @@ fn test_audio_format_mime_type() {
 #[test]
 fn test_speech_synthesis_request_serialization() {
     let request = SpeechSynthesisRequest {
-        tenant_id: 1,
+        tenant_id: 100_001,
         organization_id: 0,
         user_id: 100,
         text: "Hello, world!".to_string(),
@@ -140,7 +140,7 @@ fn test_voice_info_serialization() {
 #[test]
 fn test_voice_list_request_serialization() {
     let request = VoiceListRequest {
-        tenant_id: 1,
+        tenant_id: 100_001,
         user_id: Some(100),
         language: Some("en".to_string()),
         gender: Some("male".to_string()),
@@ -188,7 +188,7 @@ fn test_voice_list_response_serialization() {
 #[test]
 fn test_speech_synthesis_request_with_optional_fields() {
     let request = SpeechSynthesisRequest {
-        tenant_id: 1,
+        tenant_id: 100_001,
         organization_id: 0,
         user_id: 100,
         text: "Hello".to_string(),
