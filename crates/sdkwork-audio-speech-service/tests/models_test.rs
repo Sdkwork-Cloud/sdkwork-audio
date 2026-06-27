@@ -45,7 +45,7 @@ fn test_speech_synthesis_request_serialization() {
     let request = SpeechSynthesisRequest {
         tenant_id: 100_001,
         organization_id: 0,
-        user_id: 100,
+        user_id: 1,
         text: "Hello, world!".to_string(),
         text_format: TextFormat::Plain,
         language: Some("en".to_string()),
@@ -141,7 +141,7 @@ fn test_voice_info_serialization() {
 fn test_voice_list_request_serialization() {
     let request = VoiceListRequest {
         tenant_id: 100_001,
-        user_id: Some(100),
+        user_id: Some(1),
         language: Some("en".to_string()),
         gender: Some("male".to_string()),
         voice_type: Some("prebuilt".to_string()),
@@ -153,7 +153,7 @@ fn test_voice_list_request_serialization() {
     let deserialized: VoiceListRequest = serde_json::from_str(&json).unwrap();
 
     assert_eq!(deserialized.tenant_id, 1);
-    assert_eq!(deserialized.user_id, Some(100));
+    assert_eq!(deserialized.user_id, Some(1));
     assert_eq!(deserialized.language, Some("en".to_string()));
     assert_eq!(deserialized.limit, 20);
     assert_eq!(deserialized.offset, 0);
@@ -190,7 +190,7 @@ fn test_speech_synthesis_request_with_optional_fields() {
     let request = SpeechSynthesisRequest {
         tenant_id: 100_001,
         organization_id: 0,
-        user_id: 100,
+        user_id: 1,
         text: "Hello".to_string(),
         text_format: TextFormat::Plain,
         language: None,
