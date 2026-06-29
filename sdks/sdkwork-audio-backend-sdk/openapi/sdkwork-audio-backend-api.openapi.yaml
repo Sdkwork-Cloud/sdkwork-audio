@@ -1,9 +1,12 @@
 openapi: 3.1.2
 info:
   title: SDKWork Audio Backend API
-  description: |
-    Backend API for SDKWork Audio application.
-    Provides provider management, task administration, webhook handling, analytics, and system management.
+  description: 'Backend API for SDKWork Audio application.
+
+    Provides provider management, task administration, webhook handling, analytics,
+    and system management.
+
+    '
   version: 0.1.0
   contact:
     name: SDKWork
@@ -11,33 +14,29 @@ info:
   license:
     name: Proprietary
     url: https://sdkwork.com/terms
-
 servers:
-  - url: https://api.sdkwork.com/backend/v3/api/audio
-    description: Production server
-  - url: https://api-dev.sdkwork.com/backend/v3/api/audio
-    description: Development server
-  - url: https://api-test.sdkwork.com/backend/v3/api/audio
-    description: Test server
-
+- url: https://api.sdkwork.com/backend/v3/api/audio
+  description: Production server
+- url: https://api-dev.sdkwork.com/backend/v3/api/audio
+  description: Development server
+- url: https://api-test.sdkwork.com/backend/v3/api/audio
+  description: Test server
 security:
-  - AuthToken: []
-  - AccessToken: []
-
+- AuthToken: []
+- AccessToken: []
 tags:
-  - name: providerRoutes
-    description: Provider route management
-  - name: tasks
-    description: Task administration
-  - name: webhooks
-    description: Webhook management
-  - name: analytics
-    description: Usage analytics
-  - name: moderation
-    description: Content moderation
-  - name: system
-    description: System management
-
+- name: providerRoutes
+  description: Provider route management
+- name: tasks
+  description: Task administration
+- name: webhooks
+  description: Webhook management
+- name: analytics
+  description: Usage analytics
+- name: moderation
+  description: Content moderation
+- name: system
+  description: System management
 paths:
   /provider-routes:
     get:
@@ -45,28 +44,28 @@ paths:
       summary: List provider routes
       description: List all provider routes.
       tags:
-        - providerRoutes
+      - providerRoutes
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - $ref: '#/components/parameters/CursorPagination'
+      - $ref: '#/components/parameters/CursorPagination'
       responses:
         '200':
           description: List of provider routes
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProviderRouteListResponse'
+                $ref: '#/components/schemas/SdkWorkListResponse'
     post:
       operationId: providerRoutes.create
       summary: Create provider route
       description: Create a new provider route.
       tags:
-        - providerRoutes
+      - providerRoutes
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       requestBody:
         required: true
         content:
@@ -79,48 +78,71 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProviderRouteResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/ProviderRouteResponse'
   /provider-routes/{providerRouteId}:
     get:
       operationId: providerRoutes.retrieve
       summary: Get provider route
       description: Get details of a specific provider route.
       tags:
-        - providerRoutes
+      - providerRoutes
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: providerRouteId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: providerRouteId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Provider route details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProviderRouteResponse'
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/ProviderRouteResponse'
     patch:
       operationId: providerRoutes.update
       summary: Update provider route
       description: Update a provider route.
       tags:
-        - providerRoutes
+      - providerRoutes
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: providerRouteId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: providerRouteId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
@@ -133,136 +155,193 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProviderRouteResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/ProviderRouteResponse'
   /tasks:
     get:
       operationId: tasks.list
       summary: List tasks
       description: List all tasks (admin).
       tags:
-        - tasks
+      - tasks
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: userId
-          in: query
-          schema:
-            type: string
-            format: uuid
-          description: Filter by user
-        - name: operationType
-          in: query
-          schema:
-            type: string
-            enum: [speech, transcription, translation, sound_effect, music]
-          description: Filter by operation type
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
-          description: Filter by status
-        - $ref: '#/components/parameters/CursorPagination'
+      - name: userId
+        in: query
+        schema:
+          type: string
+          format: uuid
+        description: Filter by user
+      - name: operationType
+        in: query
+        schema:
+          type: string
+          enum:
+          - speech
+          - transcription
+          - translation
+          - sound_effect
+          - music
+        description: Filter by operation type
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - queued
+          - routing
+          - submitted
+          - running
+          - succeeded
+          - failed
+          - cancelled
+          - expired
+          - needs_review
+        description: Filter by status
+      - $ref: '#/components/parameters/CursorPagination'
       responses:
         '200':
           description: List of tasks
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskListResponse'
-
+                $ref: '#/components/schemas/SdkWorkListResponse'
   /tasks/{taskId}:
     get:
       operationId: tasks.retrieve
       summary: Get task details
       description: Get details of a specific task (admin).
       tags:
-        - tasks
+      - tasks
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: taskId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Task details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskDetailResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/TaskDetailResponse'
   /tasks/{taskId}/retry:
     post:
       operationId: tasks.retry
       summary: Retry task
       description: Retry a failed task.
       tags:
-        - tasks
+      - tasks
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: taskId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Task retry initiated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/TaskResponse'
   /tasks/{taskId}/reconcile:
     post:
       operationId: tasks.reconcile
       summary: Reconcile task
       description: Reconcile a stuck task.
       tags:
-        - tasks
+      - tasks
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: taskId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Task reconciliation initiated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/TaskResponse'
   /provider-webhooks/{providerCode}:
     post:
       operationId: providerWebhooks.accept
       summary: Accept webhook
       description: Accept a provider webhook.
       tags:
-        - webhooks
+      - webhooks
       security:
-        - ApiKey: []
+      - ApiKey: []
       parameters:
-        - name: providerCode
-          in: path
-          required: true
-          schema:
-            type: string
+      - name: providerCode
+        in: path
+        required: true
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -272,98 +351,126 @@ paths:
       responses:
         '200':
           description: Webhook accepted
-
   /webhook-events:
     get:
       operationId: webhookEvents.list
       summary: List webhook events
       description: List webhook events.
       tags:
-        - webhooks
+      - webhooks
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - $ref: '#/components/parameters/CursorPagination'
+      - $ref: '#/components/parameters/CursorPagination'
       responses:
         '200':
           description: List of webhook events
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookEventListResponse'
-
+                $ref: '#/components/schemas/SdkWorkListResponse'
   /webhook-events/{eventId}/replay:
     post:
       operationId: webhookEvents.replay
       summary: Replay webhook event
       description: Replay a webhook event.
       tags:
-        - webhooks
+      - webhooks
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: eventId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: eventId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Webhook event replayed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhookEventResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/WebhookEventResponse'
   /analytics/usage:
     get:
       operationId: analytics.usage
       summary: Get usage analytics
       description: Get usage analytics.
       tags:
-        - analytics
+      - analytics
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: startDate
-          in: query
-          required: true
-          schema:
-            type: string
-            format: date
-          description: Start date
-        - name: endDate
-          in: query
-          required: true
-          schema:
-            type: string
-            format: date
-          description: End date
-        - name: groupBy
-          in: query
-          schema:
-            type: string
-            enum: [day, week, month]
-            default: day
-          description: Group by period
-        - name: operationType
-          in: query
-          schema:
-            type: string
-            enum: [speech, transcription, translation, sound_effect, music]
-          description: Filter by operation type
+      - name: startDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+        description: Start date
+      - name: endDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+        description: End date
+      - name: groupBy
+        in: query
+        schema:
+          type: string
+          enum:
+          - day
+          - week
+          - month
+          default: day
+        description: Group by period
+      - name: operationType
+        in: query
+        schema:
+          type: string
+          enum:
+          - speech
+          - transcription
+          - translation
+          - sound_effect
+          - music
+        description: Filter by operation type
       responses:
         '200':
           description: Usage analytics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsageAnalyticsResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/UsageAnalyticsResponse'
 components:
   securitySchemes:
     AuthToken:
@@ -381,7 +488,6 @@ components:
       in: header
       name: X-API-Key
       description: API key for webhook authentication
-
   parameters:
     CursorPagination:
       name: cursor
@@ -389,15 +495,14 @@ components:
       schema:
         type: string
       description: Pagination cursor
-
   schemas:
     CreateProviderRouteRequest:
       type: object
       required:
-        - providerCode
-        - providerName
-        - providerType
-        - capabilities
+      - providerCode
+      - providerName
+      - providerType
+      - capabilities
       properties:
         providerCode:
           type: string
@@ -407,7 +512,12 @@ components:
           description: Provider name
         providerType:
           type: string
-          enum: [openai, elevenlabs, azure, google, custom]
+          enum:
+          - openai
+          - elevenlabs
+          - azure
+          - google
+          - custom
           description: Provider type
         baseUrl:
           type: string
@@ -420,12 +530,16 @@ components:
           type: array
           items:
             type: string
-            enum: [speech, transcription, translation, sound_effect, music]
+            enum:
+            - speech
+            - transcription
+            - translation
+            - sound_effect
+            - music
           description: Capabilities
         config:
           type: object
           description: Provider configuration
-
     UpdateProviderRouteRequest:
       type: object
       properties:
@@ -443,16 +557,23 @@ components:
           type: array
           items:
             type: string
-            enum: [speech, transcription, translation, sound_effect, music]
+            enum:
+            - speech
+            - transcription
+            - translation
+            - sound_effect
+            - music
           description: Capabilities
         config:
           type: object
           description: Provider configuration
         status:
           type: string
-          enum: [active, inactive, maintenance]
+          enum:
+          - active
+          - inactive
+          - maintenance
           description: Status
-
     ProviderRouteListResponse:
       type: object
       properties:
@@ -470,7 +591,6 @@ components:
               type: string
             hasMore:
               type: boolean
-
     ProviderRouteResponse:
       type: object
       properties:
@@ -479,7 +599,6 @@ components:
           example: 0
         data:
           $ref: '#/components/schemas/ProviderRoute'
-
     ProviderRoute:
       type: object
       properties:
@@ -492,7 +611,12 @@ components:
           type: string
         providerType:
           type: string
-          enum: [openai, elevenlabs, azure, google, custom]
+          enum:
+          - openai
+          - elevenlabs
+          - azure
+          - google
+          - custom
         baseUrl:
           type: string
           format: uri
@@ -500,20 +624,30 @@ components:
           type: array
           items:
             type: string
-            enum: [speech, transcription, translation, sound_effect, music]
+            enum:
+            - speech
+            - transcription
+            - translation
+            - sound_effect
+            - music
         status:
           type: string
-          enum: [active, inactive, maintenance]
+          enum:
+          - active
+          - inactive
+          - maintenance
         healthStatus:
           type: string
-          enum: [healthy, degraded, unhealthy]
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
         createdAt:
           type: string
           format: date-time
         updatedAt:
           type: string
           format: date-time
-
     TaskListResponse:
       type: object
       properties:
@@ -531,7 +665,6 @@ components:
               type: string
             hasMore:
               type: boolean
-
     TaskDetailResponse:
       type: object
       properties:
@@ -540,7 +673,6 @@ components:
           example: 0
         data:
           $ref: '#/components/schemas/TaskDetail'
-
     TaskResponse:
       type: object
       properties:
@@ -555,8 +687,16 @@ components:
               format: uuid
             status:
               type: string
-              enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
-
+              enum:
+              - queued
+              - routing
+              - submitted
+              - running
+              - succeeded
+              - failed
+              - cancelled
+              - expired
+              - needs_review
     TaskSummary:
       type: object
       properties:
@@ -568,17 +708,30 @@ components:
           format: uuid
         operationType:
           type: string
-          enum: [speech, transcription, translation, sound_effect, music]
+          enum:
+          - speech
+          - transcription
+          - translation
+          - sound_effect
+          - music
         status:
           type: string
-          enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
+          enum:
+          - queued
+          - routing
+          - submitted
+          - running
+          - succeeded
+          - failed
+          - cancelled
+          - expired
+          - needs_review
         createdAt:
           type: string
           format: date-time
         completedAt:
           type: string
           format: date-time
-
     TaskDetail:
       type: object
       properties:
@@ -590,14 +743,28 @@ components:
           format: uuid
         operationType:
           type: string
-          enum: [speech, transcription, translation, sound_effect, music]
+          enum:
+          - speech
+          - transcription
+          - translation
+          - sound_effect
+          - music
         status:
           type: string
-          enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
+          enum:
+          - queued
+          - routing
+          - submitted
+          - running
+          - succeeded
+          - failed
+          - cancelled
+          - expired
+          - needs_review
         progress:
           type: number
-          minimum: 0.0
-          maximum: 1.0
+          minimum: 0
+          maximum: 1
         requestParams:
           type: object
         resultMetadata:
@@ -612,7 +779,6 @@ components:
         completedAt:
           type: string
           format: date-time
-
     Artifact:
       type: object
       properties:
@@ -621,10 +787,20 @@ components:
           format: uuid
         artifactKind:
           type: string
-          enum: [audio, text, subtitle, waveform, metadata]
+          enum:
+          - audio
+          - text
+          - subtitle
+          - waveform
+          - metadata
         mediaKind:
           type: string
-          enum: [speech, transcription, translation, sound_effect, music]
+          enum:
+          - speech
+          - transcription
+          - translation
+          - sound_effect
+          - music
         mimeType:
           type: string
         contentLength:
@@ -634,7 +810,6 @@ components:
         downloadUrl:
           type: string
           format: uri
-
     WebhookEventListResponse:
       type: object
       properties:
@@ -652,7 +827,6 @@ components:
               type: string
             hasMore:
               type: boolean
-
     WebhookEventResponse:
       type: object
       properties:
@@ -661,7 +835,6 @@ components:
           example: 0
         data:
           $ref: '#/components/schemas/WebhookEvent'
-
     WebhookEvent:
       type: object
       properties:
@@ -676,11 +849,14 @@ components:
           type: object
         status:
           type: string
-          enum: [pending, processed, failed, replayed]
+          enum:
+          - pending
+          - processed
+          - failed
+          - replayed
         createdAt:
           type: string
           format: date-time
-
     UsageAnalyticsResponse:
       type: object
       properties:
@@ -710,3 +886,174 @@ components:
                     type: integer
                   characters:
                     type: integer
+    SdkWorkApiResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - data
+      - traceId
+      properties:
+        code:
+          type: integer
+          format: int32
+          enum:
+          - 0
+          default: 0
+          minimum: 0
+          maximum: 0
+        data:
+          description: Operation-specific payload typed per response schema.
+        traceId:
+          type: string
+          format: uuid
+          description: Server-owned request correlation id.
+    SdkWorkResourceData:
+      type: object
+      additionalProperties: false
+      required:
+      - item
+      properties:
+        item:
+          type: object
+          additionalProperties: true
+          description: Typed domain resource for the operation.
+    SdkWorkPageData:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - pageInfo
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+    SdkWorkCommandData:
+      type: object
+      additionalProperties: false
+      required:
+      - accepted
+      properties:
+        accepted:
+          type: boolean
+          const: true
+        resourceId:
+          type: string
+        status:
+          type: string
+    PageInfo:
+      type: object
+      additionalProperties: false
+      required:
+      - mode
+      properties:
+        mode:
+          type: string
+          enum:
+          - offset
+          - cursor
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 200
+        totalItems:
+          type: string
+          pattern: ^[0-9]+$
+        totalPages:
+          type: integer
+          minimum: 0
+        nextCursor:
+          type:
+          - string
+          - 'null'
+        hasMore:
+          type: boolean
+    SdkWorkPlatformErrorCode:
+      type: integer
+      format: int32
+      minimum: 40001
+      maximum: 79999
+      description: Platform or domain error code per API_SPEC.md 搂15.3.
+    ProblemDetail:
+      type: object
+      additionalProperties: true
+      required:
+      - type
+      - title
+      - status
+      - code
+      - traceId
+      properties:
+        type:
+          type: string
+          format: uri-reference
+        title:
+          type: string
+        status:
+          type: integer
+          minimum: 100
+          maximum: 599
+        detail:
+          type: string
+        instance:
+          type: string
+        code:
+          $ref: '#/components/schemas/SdkWorkPlatformErrorCode'
+        traceId:
+          type: string
+          format: uuid
+          description: Server-owned request correlation id.
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldError'
+    FieldError:
+      type: object
+      additionalProperties: false
+      required:
+      - field
+      - message
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+        code:
+          type: integer
+          format: int32
+          minimum: 40011
+          maximum: 40099
+    SdkWorkResourceResponse:
+      allOf:
+      - $ref: '#/components/schemas/SdkWorkApiResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/SdkWorkResourceData'
+    SdkWorkListResponse:
+      allOf:
+      - $ref: '#/components/schemas/SdkWorkApiResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/SdkWorkPageData'
+    SdkWorkCommandResponse:
+      allOf:
+      - $ref: '#/components/schemas/SdkWorkApiResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/SdkWorkCommandData'

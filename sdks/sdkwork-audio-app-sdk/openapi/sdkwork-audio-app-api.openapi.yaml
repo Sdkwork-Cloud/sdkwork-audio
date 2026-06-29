@@ -1,9 +1,12 @@
 openapi: 3.1.2
 info:
   title: SDKWork Audio App API
-  description: |
-    App API for SDKWork Audio application.
-    Provides speech synthesis, transcription, translation, sound effects, voice cloning, and real-time audio processing.
+  description: 'App API for SDKWork Audio application.
+
+    Provides speech synthesis, transcription, translation, sound effects, voice cloning,
+    and real-time audio processing.
+
+    '
   version: 0.1.0
   contact:
     name: SDKWork
@@ -11,39 +14,35 @@ info:
   license:
     name: Proprietary
     url: https://sdkwork.com/terms
-
 servers:
-  - url: https://api.sdkwork.com/app/v3/api/audio
-    description: Production server
-  - url: https://api-dev.sdkwork.com/app/v3/api/audio
-    description: Development server
-  - url: https://api-test.sdkwork.com/app/v3/api/audio
-    description: Test server
-
+- url: https://api.sdkwork.com/app/v3/api/audio
+  description: Production server
+- url: https://api-dev.sdkwork.com/app/v3/api/audio
+  description: Development server
+- url: https://api-test.sdkwork.com/app/v3/api/audio
+  description: Test server
 security:
-  - AuthToken: []
-  - AccessToken: []
-
+- AuthToken: []
+- AccessToken: []
 tags:
-  - name: speech
-    description: Speech synthesis operations
-  - name: transcriptions
-    description: Audio transcription operations
-  - name: translations
-    description: Audio translation operations
-  - name: soundEffects
-    description: Sound effect generation operations
-  - name: tasks
-    description: Task management operations
-  - name: realtime
-    description: Real-time audio processing
-  - name: voices
-    description: Voice management operations
-  - name: workspaces
-    description: Audio workspace operations
-  - name: exports
-    description: Audio export operations
-
+- name: speech
+  description: Speech synthesis operations
+- name: transcriptions
+  description: Audio transcription operations
+- name: translations
+  description: Audio translation operations
+- name: soundEffects
+  description: Sound effect generation operations
+- name: tasks
+  description: Task management operations
+- name: realtime
+  description: Real-time audio processing
+- name: voices
+  description: Voice management operations
+- name: workspaces
+  description: Audio workspace operations
+- name: exports
+  description: Audio export operations
 paths:
   /speech:
     post:
@@ -51,10 +50,10 @@ paths:
       summary: Create speech synthesis task
       description: Create a new speech synthesis task from text input.
       tags:
-        - speech
+      - speech
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       requestBody:
         required: true
         content:
@@ -67,61 +66,77 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskResponse'
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/TaskResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '429':
           $ref: '#/components/responses/RateLimitError'
-
   /speech/voices:
     get:
       operationId: speech.voices.list
       summary: List speech voices
       description: List available speech synthesis voices.
       tags:
-        - speech
+      - speech
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: language
-          in: query
-          schema:
-            type: string
-          description: Filter by language
-        - name: gender
-          in: query
-          schema:
-            type: string
-            enum: [male, female, neutral]
-          description: Filter by gender
-        - name: voiceType
-          in: query
-          schema:
-            type: string
-            enum: [prebuilt, custom, cloned]
-          description: Filter by voice type
-        - $ref: '#/components/parameters/CursorPagination'
+      - name: language
+        in: query
+        schema:
+          type: string
+        description: Filter by language
+      - name: gender
+        in: query
+        schema:
+          type: string
+          enum:
+          - male
+          - female
+          - neutral
+        description: Filter by gender
+      - name: voiceType
+        in: query
+        schema:
+          type: string
+          enum:
+          - prebuilt
+          - custom
+          - cloned
+        description: Filter by voice type
+      - $ref: '#/components/parameters/CursorPagination'
       responses:
         '200':
           description: List of voices
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VoiceListResponse'
-
+                $ref: '#/components/schemas/SdkWorkListResponse'
   /transcriptions:
     post:
       operationId: transcriptions.create
       summary: Create transcription task
       description: Create a new audio transcription task.
       tags:
-        - transcriptions
+      - transcriptions
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       requestBody:
         required: true
         content:
@@ -134,43 +149,53 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/TaskResponse'
   /transcriptions/{taskId}/segments:
     get:
       operationId: transcriptions.segments.list
       summary: List transcription segments
       description: List segments of a completed transcription.
       tags:
-        - transcriptions
+      - transcriptions
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: taskId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: List of transcription segments
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TranscriptionSegmentListResponse'
-
+                $ref: '#/components/schemas/SdkWorkListResponse'
   /translations:
     post:
       operationId: translations.create
       summary: Create translation task
       description: Create a new audio translation task.
       tags:
-        - translations
+      - translations
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       requestBody:
         required: true
         content:
@@ -183,18 +208,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/TaskResponse'
   /sound-effects:
     post:
       operationId: soundEffects.create
       summary: Generate sound effect
       description: Generate a sound effect from text description.
       tags:
-        - soundEffects
+      - soundEffects
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       requestBody:
         required: true
         content:
@@ -207,100 +243,146 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/TaskResponse'
   /tasks:
     get:
       operationId: tasks.list
       summary: List tasks
       description: List user's audio generation tasks.
       tags:
-        - tasks
+      - tasks
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: operationType
-          in: query
-          schema:
-            type: string
-            enum: [speech, transcription, translation, sound_effect, music]
-          description: Filter by operation type
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
-          description: Filter by status
-        - $ref: '#/components/parameters/CursorPagination'
+      - name: operationType
+        in: query
+        schema:
+          type: string
+          enum:
+          - speech
+          - transcription
+          - translation
+          - sound_effect
+          - music
+        description: Filter by operation type
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - queued
+          - routing
+          - submitted
+          - running
+          - succeeded
+          - failed
+          - cancelled
+          - expired
+          - needs_review
+        description: Filter by status
+      - $ref: '#/components/parameters/CursorPagination'
       responses:
         '200':
           description: List of tasks
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskListResponse'
-
+                $ref: '#/components/schemas/SdkWorkListResponse'
   /tasks/{taskId}:
     get:
       operationId: tasks.retrieve
       summary: Get task details
       description: Get details of a specific task.
       tags:
-        - tasks
+      - tasks
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: taskId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Task details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskDetailResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/TaskDetailResponse'
   /tasks/{taskId}/cancel:
     post:
       operationId: tasks.cancel
       summary: Cancel task
       description: Cancel a running task.
       tags:
-        - tasks
+      - tasks
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - name: taskId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: Task cancelled
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/TaskResponse'
   /realtime/sessions:
     post:
       operationId: realtime.sessions.create
       summary: Create real-time session
       description: Create a new real-time audio processing session.
       tags:
-        - realtime
+      - realtime
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       requestBody:
         required: true
         content:
@@ -313,36 +395,47 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RealtimeSessionResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/RealtimeSessionResponse'
   /voices:
     get:
       operationId: voices.list
       summary: List voices
       description: List user's custom voices.
       tags:
-        - voices
+      - voices
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - $ref: '#/components/parameters/CursorPagination'
+      - $ref: '#/components/parameters/CursorPagination'
       responses:
         '200':
           description: List of voices
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VoiceListResponse'
+                $ref: '#/components/schemas/SdkWorkListResponse'
     post:
       operationId: voices.create
       summary: Create voice
       description: Create a custom voice from reference audio.
       tags:
-        - voices
+      - voices
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       requestBody:
         required: true
         content:
@@ -355,36 +448,47 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VoiceResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/VoiceResponse'
   /workspaces:
     get:
       operationId: workspaces.list
       summary: List workspaces
       description: List user's audio workspaces.
       tags:
-        - workspaces
+      - workspaces
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       parameters:
-        - $ref: '#/components/parameters/CursorPagination'
+      - $ref: '#/components/parameters/CursorPagination'
       responses:
         '200':
           description: List of workspaces
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkspaceListResponse'
+                $ref: '#/components/schemas/SdkWorkListResponse'
     post:
       operationId: workspaces.create
       summary: Create workspace
       description: Create a new audio workspace.
       tags:
-        - workspaces
+      - workspaces
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       requestBody:
         required: true
         content:
@@ -397,18 +501,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkspaceResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/WorkspaceResponse'
   /exports:
     post:
       operationId: exports.create
       summary: Create export
       description: Create an audio export task.
       tags:
-        - exports
+      - exports
       security:
-        - AuthToken: []
-        - AccessToken: []
+      - AuthToken: []
+      - AccessToken: []
       requestBody:
         required: true
         content:
@@ -421,8 +536,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaskResponse'
-
+                allOf:
+                - $ref: '#/components/schemas/SdkWorkApiResponse'
+                - type: object
+                  required:
+                  - data
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - item
+                      properties:
+                        item:
+                          $ref: '#/components/schemas/TaskResponse'
 components:
   securitySchemes:
     AuthToken:
@@ -435,7 +561,6 @@ components:
       in: header
       name: Access-Token
       description: Access token for API access
-
   parameters:
     CursorPagination:
       name: cursor
@@ -452,19 +577,20 @@ components:
         maximum: 100
         default: 20
       description: Number of results per page
-
   schemas:
     SpeechRequest:
       type: object
       required:
-        - text
+      - text
       properties:
         text:
           type: string
           description: Text to synthesize
         textFormat:
           type: string
-          enum: [plain, ssml]
+          enum:
+          - plain
+          - ssml
           default: plain
           description: Text format
         language:
@@ -477,48 +603,56 @@ components:
         speed:
           type: number
           minimum: 0.5
-          maximum: 2.0
-          default: 1.0
+          maximum: 2
+          default: 1
           description: Speech speed
         pitch:
           type: number
           minimum: 0.5
-          maximum: 2.0
-          default: 1.0
+          maximum: 2
+          default: 1
           description: Speech pitch
         volume:
           type: number
-          minimum: 0.0
-          maximum: 1.0
-          default: 1.0
+          minimum: 0
+          maximum: 1
+          default: 1
           description: Speech volume
         emotion:
           type: string
           description: Emotion to apply
         emotionIntensity:
           type: number
-          minimum: 0.0
-          maximum: 1.0
+          minimum: 0
+          maximum: 1
           default: 0.5
           description: Emotion intensity
         audioFormat:
           type: string
-          enum: [mp3, wav, flac, ogg]
+          enum:
+          - mp3
+          - wav
+          - flac
+          - ogg
           default: mp3
           description: Output audio format
         sampleRate:
           type: integer
-          enum: [8000, 16000, 22050, 44100, 48000]
+          enum:
+          - 8000
+          - 16000
+          - 22050
+          - 44100
+          - 48000
           default: 24000
           description: Sample rate
         idempotencyKey:
           type: string
           description: Idempotency key
-
     TranscriptionRequest:
       type: object
       required:
-        - audioUrl
+      - audioUrl
       properties:
         audioUrl:
           type: string
@@ -546,18 +680,21 @@ components:
           description: Maximum number of speakers
         outputFormat:
           type: string
-          enum: [json, srt, vtt, txt]
+          enum:
+          - json
+          - srt
+          - vtt
+          - txt
           default: json
           description: Output format
         idempotencyKey:
           type: string
           description: Idempotency key
-
     TranslationRequest:
       type: object
       required:
-        - audioUrl
-        - targetLanguage
+      - audioUrl
+      - targetLanguage
       properties:
         audioUrl:
           type: string
@@ -571,17 +708,20 @@ components:
           description: Target language code
         outputFormat:
           type: string
-          enum: [json, srt, vtt, txt]
+          enum:
+          - json
+          - srt
+          - vtt
+          - txt
           default: json
           description: Output format
         idempotencyKey:
           type: string
           description: Idempotency key
-
     SoundEffectRequest:
       type: object
       required:
-        - description
+      - description
       properties:
         description:
           type: string
@@ -596,32 +736,40 @@ components:
           description: Style of sound effect
         intensity:
           type: number
-          minimum: 0.0
-          maximum: 1.0
+          minimum: 0
+          maximum: 1
           default: 0.5
           description: Intensity level
         format:
           type: string
-          enum: [wav, mp3, flac]
+          enum:
+          - wav
+          - mp3
+          - flac
           default: wav
           description: Output format
         sampleRate:
           type: integer
-          enum: [22050, 44100, 48000]
+          enum:
+          - 22050
+          - 44100
+          - 48000
           default: 44100
           description: Sample rate
         idempotencyKey:
           type: string
           description: Idempotency key
-
     RealtimeSessionRequest:
       type: object
       required:
-        - sessionType
+      - sessionType
       properties:
         sessionType:
           type: string
-          enum: [transcription, translation, call]
+          enum:
+          - transcription
+          - translation
+          - call
           description: Session type
         language:
           type: string
@@ -646,12 +794,11 @@ components:
           type: boolean
           default: false
           description: Enable recording
-
     CreateVoiceRequest:
       type: object
       required:
-        - name
-        - referenceAudioUrl
+      - name
+      - referenceAudioUrl
       properties:
         name:
           type: string
@@ -669,11 +816,10 @@ components:
         cloneParameters:
           type: object
           description: Cloning parameters
-
     CreateWorkspaceRequest:
       type: object
       required:
-        - name
+      - name
       properties:
         name:
           type: string
@@ -681,12 +827,11 @@ components:
         description:
           type: string
           description: Workspace description
-
     ExportRequest:
       type: object
       required:
-        - workspaceId
-        - format
+      - workspaceId
+      - format
       properties:
         workspaceId:
           type: string
@@ -694,24 +839,35 @@ components:
           description: Workspace ID
         format:
           type: string
-          enum: [mp3, wav, flac, ogg]
+          enum:
+          - mp3
+          - wav
+          - flac
+          - ogg
           description: Export format
         quality:
           type: string
-          enum: [low, medium, high]
+          enum:
+          - low
+          - medium
+          - high
           default: high
           description: Export quality
         sampleRate:
           type: integer
-          enum: [22050, 44100, 48000]
+          enum:
+          - 22050
+          - 44100
+          - 48000
           default: 44100
           description: Sample rate
         channels:
           type: integer
-          enum: [1, 2]
+          enum:
+          - 1
+          - 2
           default: 2
           description: Number of channels
-
     TaskResponse:
       type: object
       properties:
@@ -726,11 +882,19 @@ components:
               format: uuid
             status:
               type: string
-              enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
+              enum:
+              - queued
+              - routing
+              - submitted
+              - running
+              - succeeded
+              - failed
+              - cancelled
+              - expired
+              - needs_review
             estimatedDuration:
               type: integer
               description: Estimated duration in milliseconds
-
     TaskListResponse:
       type: object
       properties:
@@ -748,7 +912,6 @@ components:
               type: string
             hasMore:
               type: boolean
-
     TaskDetailResponse:
       type: object
       properties:
@@ -757,7 +920,6 @@ components:
           example: 0
         data:
           $ref: '#/components/schemas/TaskDetail'
-
     TaskSummary:
       type: object
       properties:
@@ -766,17 +928,30 @@ components:
           format: uuid
         operationType:
           type: string
-          enum: [speech, transcription, translation, sound_effect, music]
+          enum:
+          - speech
+          - transcription
+          - translation
+          - sound_effect
+          - music
         status:
           type: string
-          enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
+          enum:
+          - queued
+          - routing
+          - submitted
+          - running
+          - succeeded
+          - failed
+          - cancelled
+          - expired
+          - needs_review
         createdAt:
           type: string
           format: date-time
         completedAt:
           type: string
           format: date-time
-
     TaskDetail:
       type: object
       properties:
@@ -785,14 +960,28 @@ components:
           format: uuid
         operationType:
           type: string
-          enum: [speech, transcription, translation, sound_effect, music]
+          enum:
+          - speech
+          - transcription
+          - translation
+          - sound_effect
+          - music
         status:
           type: string
-          enum: [queued, routing, submitted, running, succeeded, failed, cancelled, expired, needs_review]
+          enum:
+          - queued
+          - routing
+          - submitted
+          - running
+          - succeeded
+          - failed
+          - cancelled
+          - expired
+          - needs_review
         progress:
           type: number
-          minimum: 0.0
-          maximum: 1.0
+          minimum: 0
+          maximum: 1
         requestParams:
           type: object
         resultMetadata:
@@ -807,7 +996,6 @@ components:
         completedAt:
           type: string
           format: date-time
-
     Artifact:
       type: object
       properties:
@@ -816,10 +1004,20 @@ components:
           format: uuid
         artifactKind:
           type: string
-          enum: [audio, text, subtitle, waveform, metadata]
+          enum:
+          - audio
+          - text
+          - subtitle
+          - waveform
+          - metadata
         mediaKind:
           type: string
-          enum: [speech, transcription, translation, sound_effect, music]
+          enum:
+          - speech
+          - transcription
+          - translation
+          - sound_effect
+          - music
         mimeType:
           type: string
         contentLength:
@@ -829,7 +1027,6 @@ components:
         downloadUrl:
           type: string
           format: uri
-
     VoiceListResponse:
       type: object
       properties:
@@ -847,7 +1044,6 @@ components:
               type: string
             hasMore:
               type: boolean
-
     VoiceResponse:
       type: object
       properties:
@@ -856,7 +1052,6 @@ components:
           example: 0
         data:
           $ref: '#/components/schemas/Voice'
-
     Voice:
       type: object
       properties:
@@ -871,14 +1066,19 @@ components:
           type: string
         gender:
           type: string
-          enum: [male, female, neutral]
+          enum:
+          - male
+          - female
+          - neutral
         voiceType:
           type: string
-          enum: [prebuilt, custom, cloned]
+          enum:
+          - prebuilt
+          - custom
+          - cloned
         previewUrl:
           type: string
           format: uri
-
     TranscriptionSegmentListResponse:
       type: object
       properties:
@@ -892,7 +1092,6 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/TranscriptionSegment'
-
     TranscriptionSegment:
       type: object
       properties:
@@ -911,13 +1110,12 @@ components:
           type: string
         confidence:
           type: number
-          minimum: 0.0
-          maximum: 1.0
+          minimum: 0
+          maximum: 1
         words:
           type: array
           items:
             $ref: '#/components/schemas/Word'
-
     Word:
       type: object
       properties:
@@ -929,9 +1127,8 @@ components:
           type: integer
         confidence:
           type: number
-          minimum: 0.0
-          maximum: 1.0
-
+          minimum: 0
+          maximum: 1
     RealtimeSessionResponse:
       type: object
       properties:
@@ -949,8 +1146,13 @@ components:
               format: uri
             status:
               type: string
-              enum: [created, connecting, active, paused, ended, failed]
-
+              enum:
+              - created
+              - connecting
+              - active
+              - paused
+              - ended
+              - failed
     WorkspaceListResponse:
       type: object
       properties:
@@ -968,7 +1170,6 @@ components:
               type: string
             hasMore:
               type: boolean
-
     WorkspaceResponse:
       type: object
       properties:
@@ -977,7 +1178,6 @@ components:
           example: 0
         data:
           $ref: '#/components/schemas/Workspace'
-
     Workspace:
       type: object
       properties:
@@ -991,27 +1191,241 @@ components:
         createdAt:
           type: string
           format: date-time
-
+    SdkWorkApiResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - data
+      - traceId
+      properties:
+        code:
+          type: integer
+          format: int32
+          enum:
+          - 0
+          default: 0
+          minimum: 0
+          maximum: 0
+        data:
+          description: Operation-specific payload typed per response schema.
+        traceId:
+          type: string
+          format: uuid
+          description: Server-owned request correlation id.
+    SdkWorkResourceData:
+      type: object
+      additionalProperties: false
+      required:
+      - item
+      properties:
+        item:
+          type: object
+          additionalProperties: true
+          description: Typed domain resource for the operation.
+    SdkWorkPageData:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - pageInfo
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+    SdkWorkCommandData:
+      type: object
+      additionalProperties: false
+      required:
+      - accepted
+      properties:
+        accepted:
+          type: boolean
+          const: true
+        resourceId:
+          type: string
+        status:
+          type: string
+    PageInfo:
+      type: object
+      additionalProperties: false
+      required:
+      - mode
+      properties:
+        mode:
+          type: string
+          enum:
+          - offset
+          - cursor
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 200
+        totalItems:
+          type: string
+          pattern: ^[0-9]+$
+        totalPages:
+          type: integer
+          minimum: 0
+        nextCursor:
+          type:
+          - string
+          - 'null'
+        hasMore:
+          type: boolean
+    SdkWorkPlatformErrorCode:
+      type: integer
+      format: int32
+      minimum: 40001
+      maximum: 79999
+      description: Platform or domain error code per API_SPEC.md 搂15.3.
+    ProblemDetail:
+      type: object
+      additionalProperties: true
+      required:
+      - type
+      - title
+      - status
+      - code
+      - traceId
+      properties:
+        type:
+          type: string
+          format: uri-reference
+        title:
+          type: string
+        status:
+          type: integer
+          minimum: 100
+          maximum: 599
+        detail:
+          type: string
+        instance:
+          type: string
+        code:
+          $ref: '#/components/schemas/SdkWorkPlatformErrorCode'
+        traceId:
+          type: string
+          format: uuid
+          description: Server-owned request correlation id.
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldError'
+    FieldError:
+      type: object
+      additionalProperties: false
+      required:
+      - field
+      - message
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+        code:
+          type: integer
+          format: int32
+          minimum: 40011
+          maximum: 40099
+    SdkWorkResourceResponse:
+      allOf:
+      - $ref: '#/components/schemas/SdkWorkApiResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/SdkWorkResourceData'
+    SdkWorkListResponse:
+      allOf:
+      - $ref: '#/components/schemas/SdkWorkApiResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/SdkWorkPageData'
+    SdkWorkCommandResponse:
+      allOf:
+      - $ref: '#/components/schemas/SdkWorkApiResponse'
+      - type: object
+        required:
+        - data
+        properties:
+          data:
+            $ref: '#/components/schemas/SdkWorkCommandData'
   responses:
     ValidationError:
       description: Validation error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            allOf:
+            - $ref: '#/components/schemas/SdkWorkApiResponse'
+            - type: object
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  required:
+                  - item
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/ErrorResponse'
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
     UnauthorizedError:
       description: Unauthorized
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            allOf:
+            - $ref: '#/components/schemas/SdkWorkApiResponse'
+            - type: object
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  required:
+                  - item
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/ErrorResponse'
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
     RateLimitError:
       description: Rate limit exceeded
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
+            allOf:
+            - $ref: '#/components/schemas/SdkWorkApiResponse'
+            - type: object
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  required:
+                  - item
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/ErrorResponse'
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
     ErrorResponse:
       type: object
       properties:
