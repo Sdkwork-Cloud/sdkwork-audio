@@ -1,4 +1,5 @@
 # sdkwork-audio
+repository-kind: application
 
 - [apps directory index](apps/README.md)
 

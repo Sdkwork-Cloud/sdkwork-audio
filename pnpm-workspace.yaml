@@ -1,6 +1,4 @@
 packages:
-  - "packages/common/*/*"
-  - "packages/pc-react/*/*"
   - "sdks/*"
   - "sdks/sdkwork-audio-app-sdk/sdkwork-audio-app-sdk-typescript/generated/server-openapi"
   - "sdks/sdkwork-audio-backend-sdk/sdkwork-audio-backend-sdk-typescript/generated/server-openapi"
