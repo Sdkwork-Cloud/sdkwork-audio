@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 1,
   "workspace": "sdkwork-audio-backend-sdk",
   "title": "SDKWork Audio Backend API SDK",
   "apiVersion": "1.0.0",
@@ -19,6 +20,23 @@
     ],
     "manualTransports": []
   },
+  "sdkDependencies": [
+    {
+      "workspace": "sdkwork-iam-sdk",
+      "role": "authentication-capability",
+      "required": true,
+      "dependencyMode": "consumer-sdk",
+      "apiPrefix": null,
+      "generatedTransportImportPolicy": "forbidden",
+      "packageByLanguage": {
+        "typescript": "@sdkwork/iam-sdk"
+      }
+    }
+  ],
+  "metadata": {
+    "managedBy": "sdks/materialize-audio-v3-openapi-boundaries.mjs",
+    "standardVersion": "2026-06-14"
+  },
   "languages": [
     {
       "language": "typescript",
@@ -27,10 +45,11 @@
       "releaseState": "not_published",
       "packagePath": "sdkwork-audio-backend-sdk-typescript/generated/server-openapi",
       "manifestPath": "sdkwork-audio-backend-sdk-typescript/generated/server-openapi/package.json",
-      "name": "@sdkwork/audio-backend-sdk",
       "version": "1.0.0",
       "description": "Generator-owned TypeScript transport SDK for SDKWork Audio Backend API.",
-      "generatedPath": "sdkwork-audio-backend-sdk-typescript/generated/server-openapi"
+      "generatedPath": "sdkwork-audio-backend-sdk-typescript/generated/server-openapi",
+      "consumerPackageName": "@sdkwork/audio-backend-sdk",
+      "transportPackageName": "sdkwork-audio-backend-sdk-generated-typescript"
     },
     {
       "language": "dart",
@@ -165,21 +184,8 @@
       "generatedPath": "sdkwork-audio-backend-sdk-ruby/generated/server-openapi"
     }
   ],
-  "sdkDependencies": [
-    {
-      "workspace": "sdkwork-iam-sdk",
-      "role": "authentication-capability",
-      "required": true,
-      "dependencyMode": "consumer-sdk",
-      "apiPrefix": null,
-      "generatedTransportImportPolicy": "forbidden",
-      "packageByLanguage": {
-        "typescript": "@sdkwork/iam-sdk"
-      }
-    }
-  ],
-  "metadata": {
-    "managedBy": "sdks/materialize-audio-v3-openapi-boundaries.mjs",
-    "standardVersion": "2026-06-14"
-  }
+  "sdkFamily": "sdkwork-audio-backend-sdk",
+  "sdkName": "sdkwork-audio-backend-sdk",
+  "packageName": "@sdkwork/audio-backend-sdk",
+  "transportPackageName": "sdkwork-audio-backend-sdk-generated-typescript"
 }
