@@ -787,7 +787,7 @@ X-RateLimit-Reset: 1623456789
 
 **Request**:
 ```
-GET /app/v3/api/audio/tasks?cursor=abc123&limit=20
+GET /app/v3/api/audio/tasks?cursor=abc123&page_size=20
 ```
 
 **Response**:

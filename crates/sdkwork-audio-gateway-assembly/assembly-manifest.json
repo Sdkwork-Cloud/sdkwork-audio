@@ -4,7 +4,7 @@
   "applicationCode": "audio",
   "packageName": "sdkwork-audio-gateway-assembly",
   "crateDir": "crates/sdkwork-audio-gateway-assembly",
-  "generatedAt": "2026-06-25T13:08:05.506Z",
+  "generatedAt": "2026-07-08T01:33:36.193Z",
   "routeCrates": [
     {
       "packageName": "sdkwork-routes-audio-app-api",
