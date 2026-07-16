@@ -61,7 +61,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SpeechRequest'
       responses:
-        '200':
+        '201':
           description: Speech synthesis task created
           content:
             application/json:
@@ -144,7 +144,7 @@ paths:
             schema:
               $ref: '#/components/schemas/TranscriptionRequest'
       responses:
-        '200':
+        '201':
           description: Transcription task created
           content:
             application/json:
@@ -203,7 +203,7 @@ paths:
             schema:
               $ref: '#/components/schemas/TranslationRequest'
       responses:
-        '200':
+        '201':
           description: Translation task created
           content:
             application/json:
@@ -238,7 +238,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SoundEffectRequest'
       responses:
-        '200':
+        '201':
           description: Sound effect task created
           content:
             application/json:
@@ -390,7 +390,7 @@ paths:
             schema:
               $ref: '#/components/schemas/RealtimeSessionRequest'
       responses:
-        '200':
+        '201':
           description: Real-time session created
           content:
             application/json:
@@ -443,7 +443,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateVoiceRequest'
       responses:
-        '200':
+        '201':
           description: Voice created
           content:
             application/json:
@@ -496,7 +496,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateWorkspaceRequest'
       responses:
-        '200':
+        '201':
           description: Workspace created
           content:
             application/json:
@@ -531,7 +531,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ExportRequest'
       responses:
-        '200':
+        '201':
           description: Export task created
           content:
             application/json:
@@ -573,9 +573,8 @@ components:
       in: query
       schema:
         type: integer
-          maximum: 200
         minimum: 1
-        maximum: 100
+        maximum: 200
         default: 20
       description: Number of results per page
   schemas:
@@ -1286,7 +1285,7 @@ components:
       format: int32
       minimum: 40001
       maximum: 79999
-      description: Platform or domain error code per API_SPEC.md 搂15.3.
+      description: "Platform or domain error code per API_SPEC.md 鎼\uDC8215.3."
     ProblemDetail:
       type: object
       additionalProperties: true

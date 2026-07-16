@@ -172,8 +172,8 @@ apis/
 
 | SDK Family | Status | Notes |
 |------------|--------|-------|
-| `sdkwork-audio-app-sdk` | ✅ Created | App SDK with .sdkwork-assembly.json and OpenAPI spec |
-| `sdkwork-audio-backend-sdk` | ✅ Created | Backend SDK with .sdkwork-assembly.json and OpenAPI spec |
+| `sdkwork-audio-app-sdk` | ✅ Created | App SDK with sdk-manifest.json and OpenAPI spec |
+| `sdkwork-audio-backend-sdk` | ✅ Created | Backend SDK with sdk-manifest.json and OpenAPI spec |
 
 ### 4.2 SDK Generation
 
@@ -187,8 +187,8 @@ apis/
 
 | File | Status | Notes |
 |------|--------|-------|
-| `.sdkwork-assembly.json` (App SDK) | ✅ Created | Complete with 12 language targets |
-| `.sdkwork-assembly.json` (Backend SDK) | ✅ Created | Complete with 12 language targets |
+| `sdk-manifest.json` (App SDK) | ✅ Created | Complete with 12 language targets |
+| `sdk-manifest.json` (Backend SDK) | ✅ Created | Complete with 12 language targets |
 | `specs/component.spec.json` (App SDK) | ✅ Created | Component specification |
 | `specs/component.spec.json` (Backend SDK) | ✅ Created | Component specification |
 | OpenAPI specs | ✅ Copied | App and Backend API specs |
@@ -241,7 +241,7 @@ apis/
 1. **SDK Generation Setup**
    - Create SDK family directories
    - Configure SDK generation manifests
-   - Set up `.sdkwork-assembly.json` files
+   - Set up `sdk-manifest.json` files
 
 2. **Rust Crate Implementation**
    - Implement route crates for API definitions

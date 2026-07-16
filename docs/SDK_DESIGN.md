@@ -117,7 +117,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\sdks\sdkwork-audio-backend
 
 ### 4.3 SDK Assembly Metadata
 
-**File**: `.sdkwork-assembly.json`
+**File**: `sdk-manifest.json`
 
 ```json
 {

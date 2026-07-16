@@ -388,7 +388,7 @@ await adminClient.providerRoutes.create({
 
 ### 4.4 SDK Metadata
 
-**Assembly File** (`.sdkwork-assembly.json`):
+**Assembly File** (`sdk-manifest.json`):
 - `sdkOwner`: "sdkwork-audio"
 - `apiAuthority`: "sdkwork-audio-app-api"
 - `sdkFamily`: "sdkwork-audio-app-sdk"

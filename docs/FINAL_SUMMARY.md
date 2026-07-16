@@ -32,8 +32,8 @@ The SDKWork Audio Application has been fully aligned with sdkwork-specs standard
 - ✅ Audit fields (created_at, updated_at, deleted, version)
 
 ### 4. SDK Design (100%)
-- ✅ App SDK family with .sdkwork-assembly.json
-- ✅ Backend SDK family with .sdkwork-assembly.json
+- ✅ App SDK family with sdk-manifest.json
+- ✅ Backend SDK family with sdk-manifest.json
 - ✅ 12 language targets per SDK family
 - ✅ SDK dependencies declared
 - ✅ Component specifications

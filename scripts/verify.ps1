@@ -59,8 +59,8 @@ try {
 
     # 5. SDK assembly validation
     Write-Host "`n=== SDK Assembly Validation ==="
-    $AppAssemblyPath = Join-Path $RootDir "sdks\sdkwork-audio-app-sdk\.sdkwork-assembly.json"
-    $BackendAssemblyPath = Join-Path $RootDir "sdks\sdkwork-audio-backend-sdk\.sdkwork-assembly.json"
+    $AppAssemblyPath = Join-Path $RootDir "sdks\sdkwork-audio-app-sdk\sdk-manifest.json"
+    $BackendAssemblyPath = Join-Path $RootDir "sdks\sdkwork-audio-backend-sdk\sdk-manifest.json"
 
     if (-not (Test-Path $AppAssemblyPath)) {
         Write-Error "App SDK assembly not found: $AppAssemblyPath"

@@ -13,8 +13,8 @@ describe('SDK Generation Contracts', () => {
   const backendSdkPath = path.resolve(__dirname, '../../sdks/sdkwork-audio-backend-sdk');
 
   describe('App SDK', () => {
-    it('should have .sdkwork-assembly.json', () => {
-      const assemblyPath = path.join(appSdkPath, '.sdkwork-assembly.json');
+    it('should have sdk-manifest.json', () => {
+      const assemblyPath = path.join(appSdkPath, 'sdk-manifest.json');
       expect(fs.existsSync(assemblyPath)).toBe(true);
 
       const content = JSON.parse(fs.readFileSync(assemblyPath, 'utf8'));
@@ -43,7 +43,7 @@ describe('SDK Generation Contracts', () => {
     });
 
     it('should have sdkDependencies', () => {
-      const assemblyPath = path.join(appSdkPath, '.sdkwork-assembly.json');
+      const assemblyPath = path.join(appSdkPath, 'sdk-manifest.json');
       const content = JSON.parse(fs.readFileSync(assemblyPath, 'utf8'));
 
       expect(content.sdkDependencies).toBeDefined();
@@ -59,7 +59,7 @@ describe('SDK Generation Contracts', () => {
     });
 
     it('should have multiple language targets', () => {
-      const assemblyPath = path.join(appSdkPath, '.sdkwork-assembly.json');
+      const assemblyPath = path.join(appSdkPath, 'sdk-manifest.json');
       const content = JSON.parse(fs.readFileSync(assemblyPath, 'utf8'));
 
       expect(content.languages).toBeDefined();
@@ -82,8 +82,8 @@ describe('SDK Generation Contracts', () => {
   });
 
   describe('Backend SDK', () => {
-    it('should have .sdkwork-assembly.json', () => {
-      const assemblyPath = path.join(backendSdkPath, '.sdkwork-assembly.json');
+    it('should have sdk-manifest.json', () => {
+      const assemblyPath = path.join(backendSdkPath, 'sdk-manifest.json');
       expect(fs.existsSync(assemblyPath)).toBe(true);
 
       const content = JSON.parse(fs.readFileSync(assemblyPath, 'utf8'));
