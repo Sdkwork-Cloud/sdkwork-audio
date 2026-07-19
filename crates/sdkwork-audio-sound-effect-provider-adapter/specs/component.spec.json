@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "kind": "sdkwork.component.spec",
+  "component": {
+    "name": "sdkwork-audio-sound-effect-provider-adapter",
+    "displayName": "SDKWork Audio Sound-Effect Provider Adapter",
+    "version": "0.1.0",
+    "type": "rust-crate",
+    "root": "crates/sdkwork-audio-sound-effect-provider-adapter",
+    "domain": "audio",
+    "capability": "sound-effect-provider-adapter",
+    "languages": ["rust"],
+    "generated": false,
+    "manifests": ["Cargo.toml"]
+  },
+  "canonicalSpecs": [
+    { "file": "APPLICATION_LAYERED_ARCHITECTURE_SPEC.md", "path": "../../../sdkwork-specs/APPLICATION_LAYERED_ARCHITECTURE_SPEC.md", "purpose": "L4 adapter ownership." },
+    { "file": "RUST_CODE_SPEC.md", "path": "../../../sdkwork-specs/RUST_CODE_SPEC.md", "purpose": "Rust adapter rules." }
+  ],
+  "contracts": {
+    "layerRole": "backend-provider",
+    "publicExports": ["."],
+    "providedPorts": [{ "name": "soundEffectProviderAdapter", "export": "." }],
+    "requiredPorts": [
+      { "name": "soundEffectProvider", "export": "." },
+      { "name": "audioAiEngine", "export": "." }
+    ],
+    "runtimeEntrypoints": [],
+    "routeManifest": null,
+    "sdkClients": [],
+    "events": [],
+    "configKeys": []
+  },
+  "verification": { "commands": ["cargo test -p sdkwork-audio-sound-effect-provider-adapter"] }
+}

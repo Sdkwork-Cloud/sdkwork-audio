@@ -8,6 +8,8 @@ pub struct SoundEffectRequest {
     pub tenant_id: i64,
     pub organization_id: i64,
     pub user_id: i64,
+    pub vendor: Option<String>,
+    pub model: Option<String>,
     pub description: String,
     pub duration_ms: Option<u64>,
     pub style: Option<String>,
@@ -15,6 +17,8 @@ pub struct SoundEffectRequest {
     pub audio_format: AudioFormat,
     pub sample_rate: u32,
     pub idempotency_key: Option<String>,
+    pub vendor_parameters:
+        Option<sdkwork_audio_sound_effect_provider_spi::SoundEffectVendorParameters>,
 }
 
 /// Audio format

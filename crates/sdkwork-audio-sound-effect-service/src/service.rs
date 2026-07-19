@@ -3,17 +3,17 @@
 use async_trait::async_trait;
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
-use tracing::{info, warn, error};
-use uuid::Uuid;
+use tracing::{error, info, warn};
 
 use crate::error::{SoundEffectServiceError, SoundEffectServiceResult};
 use crate::models::*;
-use sdkwork_audio_generation_repository_sqlx::entities::task::*;
-use sdkwork_audio_generation_repository_sqlx::entities::artifact::*;
-use sdkwork_audio_generation_repository_sqlx::repositories::task::TaskRepository;
-use sdkwork_audio_generation_repository_sqlx::repositories::artifact::ArtifactRepository;
-use sdkwork_audio_ai_engine_rust::{AudioAiEngine, SoundEffectRequest as AiSoundEffectRequest};
 use sdkwork_audio_artifact_drive_service::AudioArtifactDriveService;
+use sdkwork_audio_generation_repository_sqlx::entities::artifact::*;
+use sdkwork_audio_generation_repository_sqlx::entities::task::*;
+use sdkwork_audio_generation_repository_sqlx::repositories::artifact::ArtifactRepository;
+use sdkwork_audio_generation_repository_sqlx::repositories::task::TaskRepository;
+use sdkwork_audio_sound_effect_generation_service::SoundEffectGenerationServicePort;
+use sdkwork_audio_sound_effect_provider_spi::{SoundEffectGenerationCommand, SoundEffectVendorId};
 
 /// Sound effect service trait
 #[async_trait]
@@ -43,27 +43,20 @@ pub trait SoundEffectService {
     ) -> SoundEffectServiceResult<SoundEffectListResponse>;
 
     /// Cancel a sound effect task
-    async fn cancel_sound_effect(
-        &self,
-        task_no: &str,
-    ) -> SoundEffectServiceResult<()>;
+    async fn cancel_sound_effect(&self, task_no: &str) -> SoundEffectServiceResult<()>;
 
     /// Get sound effect presets
-    async fn get_presets(
-        &self,
-    ) -> SoundEffectServiceResult<SoundEffectPresetsResponse>;
+    async fn get_presets(&self) -> SoundEffectServiceResult<SoundEffectPresetsResponse>;
 
     /// Get sound effect categories
-    async fn get_categories(
-        &self,
-    ) -> SoundEffectServiceResult<SoundEffectCategoriesResponse>;
+    async fn get_categories(&self) -> SoundEffectServiceResult<SoundEffectCategoriesResponse>;
 }
 
 /// Sound effect service implementation
 pub struct SoundEffectServiceImpl {
     task_repo: Arc<dyn TaskRepository + Send + Sync>,
     artifact_repo: Arc<dyn ArtifactRepository + Send + Sync>,
-    ai_engine: Arc<dyn AudioAiEngine + Send + Sync>,
+    generation_service: Arc<dyn SoundEffectGenerationServicePort>,
     drive_service: Arc<dyn AudioArtifactDriveService + Send + Sync>,
 }
 
@@ -71,13 +64,13 @@ impl SoundEffectServiceImpl {
     pub fn new(
         task_repo: Arc<dyn TaskRepository + Send + Sync>,
         artifact_repo: Arc<dyn ArtifactRepository + Send + Sync>,
-        ai_engine: Arc<dyn AudioAiEngine + Send + Sync>,
+        generation_service: Arc<dyn SoundEffectGenerationServicePort>,
         drive_service: Arc<dyn AudioArtifactDriveService + Send + Sync>,
     ) -> Self {
         Self {
             task_repo,
             artifact_repo,
-            ai_engine,
+            generation_service,
             drive_service,
         }
     }
@@ -107,55 +100,92 @@ impl SoundEffectServiceImpl {
         info!("Processing sound effect task: {}", task.task_no);
 
         // Update task status to running
-        self.task_repo.update(task.id, UpdateTaskRequest {
-            status: Some(TaskStatus::Running),
-            progress: Some(10),
-            ..Default::default()
-        }).await?;
+        self.task_repo
+            .update(
+                task.id,
+                UpdateTaskRequest {
+                    status: Some(TaskStatus::Running),
+                    progress: Some(10),
+                    ..Default::default()
+                },
+            )
+            .await?;
 
-        // Create AI engine request
-        let ai_request = AiSoundEffectRequest {
+        let vendor = request.vendor.as_deref().unwrap_or("custom");
+        let generation_command = SoundEffectGenerationCommand {
+            vendor: SoundEffectVendorId::new(vendor)
+                .map_err(|error| SoundEffectServiceError::AiEngine(error.to_string()))?,
+            model: request.model.clone(),
             description: request.description.clone(),
             duration_ms: request.duration_ms,
             style: request.style.clone(),
             intensity: request.intensity,
             format: request.audio_format.as_str().to_string(),
             sample_rate: request.sample_rate,
+            idempotency_key: request.idempotency_key.clone(),
+            vendor_parameters: request.vendor_parameters.clone(),
         };
 
         // Update progress
-        self.task_repo.update(task.id, UpdateTaskRequest {
-            progress: Some(30),
-            ..Default::default()
-        }).await?;
+        self.task_repo
+            .update(
+                task.id,
+                UpdateTaskRequest {
+                    progress: Some(30),
+                    ..Default::default()
+                },
+            )
+            .await?;
 
-        // Call AI engine
-        let ai_result = self.ai_engine.generate_sound_effect(ai_request).await
-            .map_err(|e| SoundEffectServiceError::AiEngine(e.to_string()))?;
+        let submission = self
+            .generation_service
+            .generate(generation_command)
+            .await
+            .map_err(|error| SoundEffectServiceError::AiEngine(error.to_string()))?;
+        let provider_vendor = submission.vendor.clone();
+        let generated = submission.output;
 
         // Update progress
-        self.task_repo.update(task.id, UpdateTaskRequest {
-            progress: Some(60),
-            ..Default::default()
-        }).await?;
+        self.task_repo
+            .update(
+                task.id,
+                UpdateTaskRequest {
+                    progress: Some(60),
+                    ..Default::default()
+                },
+            )
+            .await?;
 
         // Upload audio to drive
-        let filename = format!("sound_effect_{}.{}", task.task_no, request.audio_format.as_str());
+        let filename = format!(
+            "sound_effect_{}.{}",
+            task.task_no,
+            request.audio_format.as_str()
+        );
         let mime_type = request.audio_format.mime_type();
 
-        let drive_result = self.drive_service.upload_artifact(
-            task.tenant_id,
-            task.user_id,
-            &ai_result.audio_data,
-            mime_type,
-            &filename,
-        ).await.map_err(|e| SoundEffectServiceError::DriveService(e.to_string()))?;
+        let drive_result = self
+            .drive_service
+            .upload_artifact(
+                task.tenant_id,
+                task.user_id,
+                &generated.audio_data,
+                mime_type,
+                &filename,
+            )
+            .await
+            .map_err(|e| SoundEffectServiceError::DriveService(e.to_string()))?;
 
         // Update progress
-        self.task_repo.update(task.id, UpdateTaskRequest {
-            progress: Some(80),
-            ..Default::default()
-        }).await?;
+        self.task_repo
+            .update(
+                task.id,
+                UpdateTaskRequest {
+                    progress: Some(80),
+                    ..Default::default()
+                },
+            )
+            .await?;
 
         // Create artifact
         let media_resource = serde_json::json!({
@@ -165,30 +195,35 @@ impl SoundEffectServiceImpl {
             "driveResourceUri": drive_result.drive_resource_uri,
         });
 
-        self.artifact_repo.create(CreateArtifactRequest {
-            task_id: Some(task.id),
-            request_id: None,
-            kind: ArtifactKind::Audio,
-            artifact_type: Some("sound_effect".to_string()),
-            title: Some(format!("Sound effect: {}", &request.description[..std::cmp::min(50, request.description.len())])),
-            voice_id: None,
-            provider_code: Some(self.ai_engine.engine_type().as_str().to_string()),
-            provider_asset_id: None,
-            artifact_index: 0,
-            format: Some(request.audio_format.as_str().to_string()),
-            mime_type: Some(mime_type.to_string()),
-            duration_seconds: Some((ai_result.duration_ms / 1000) as i32),
-            transcript_text: None,
-            translation_text: None,
-            media_resource_json: media_resource.to_string(),
-        }).await?;
+        self.artifact_repo
+            .create(CreateArtifactRequest {
+                task_id: Some(task.id),
+                request_id: None,
+                kind: ArtifactKind::Audio,
+                artifact_type: Some("sound_effect".to_string()),
+                title: Some(format!(
+                    "Sound effect: {}",
+                    &request.description[..std::cmp::min(50, request.description.len())]
+                )),
+                voice_id: None,
+                provider_code: Some(provider_vendor),
+                provider_asset_id: None,
+                artifact_index: 0,
+                format: Some(request.audio_format.as_str().to_string()),
+                mime_type: Some(mime_type.to_string()),
+                duration_seconds: Some((generated.duration_ms / 1000) as i32),
+                transcript_text: None,
+                translation_text: None,
+                media_resource_json: media_resource.to_string(),
+            })
+            .await?;
 
         // Update task to completed
         let result = serde_json::json!({
-            "durationMs": ai_result.duration_ms,
-            "sampleRate": ai_result.sample_rate,
-            "channels": ai_result.channels,
-            "fileSizeBytes": ai_result.audio_data.len(),
+            "durationMs": generated.duration_ms,
+            "sampleRate": generated.sample_rate,
+            "channels": generated.channels,
+            "fileSizeBytes": generated.audio_data.len(),
             "format": request.audio_format.as_str(),
             "mimeType": mime_type,
             "driveSpaceId": drive_result.drive_space_id,
@@ -196,13 +231,18 @@ impl SoundEffectServiceImpl {
             "audioUrl": drive_result.drive_resource_uri,
         });
 
-        self.task_repo.update(task.id, UpdateTaskRequest {
-            status: Some(TaskStatus::Succeeded),
-            progress: Some(100),
-            result_json: Some(result.to_string()),
-            completed_at: Some(chrono::Utc::now()),
-            ..Default::default()
-        }).await?;
+        self.task_repo
+            .update(
+                task.id,
+                UpdateTaskRequest {
+                    status: Some(TaskStatus::Succeeded),
+                    progress: Some(100),
+                    result_json: Some(result.to_string()),
+                    completed_at: Some(chrono::Utc::now()),
+                    ..Default::default()
+                },
+            )
+            .await?;
 
         info!("Sound effect task completed: {}", task.task_no);
         Ok(())
@@ -241,14 +281,20 @@ impl SoundEffectService for SoundEffectServiceImpl {
 
         // Check idempotency
         if let Some(ref idempotency_key) = request.idempotency_key {
-            let existing = self.task_repo.get_by_idempotency_key(
-                request.tenant_id,
-                OperationType::SoundEffect.as_str(),
-                idempotency_key,
-            ).await?;
+            let existing = self
+                .task_repo
+                .get_by_idempotency_key(
+                    request.tenant_id,
+                    OperationType::SoundEffect.as_str(),
+                    idempotency_key,
+                )
+                .await?;
 
             if let Some(task) = existing {
-                warn!("Task already exists with idempotency key: {}", idempotency_key);
+                warn!(
+                    "Task already exists with idempotency key: {}",
+                    idempotency_key
+                );
                 return Ok(SoundEffectResponse {
                     task_id: task.id.to_string(),
                     task_no: task.task_no,
@@ -278,18 +324,24 @@ impl SoundEffectService for SoundEffectServiceImpl {
         let request_json = serde_json::to_string(&request)
             .map_err(|e| SoundEffectServiceError::Internal(e.to_string()))?;
 
-        let task = self.task_repo.create(CreateTaskRequest {
-            tenant_id: request.tenant_id,
-            organization_id: request.organization_id,
-            user_id: request.user_id,
-            operation_type: OperationType::SoundEffect,
-            provider_code: self.ai_engine.engine_type().as_str().to_string(),
-            provider_route_id: None,
-            model: None,
-            idempotency_key: request.idempotency_key.clone(),
-            request_json: request_json.clone(),
-            callback_url: None,
-        }).await?;
+        let task = self
+            .task_repo
+            .create(CreateTaskRequest {
+                tenant_id: request.tenant_id,
+                organization_id: request.organization_id,
+                user_id: request.user_id,
+                operation_type: OperationType::SoundEffect,
+                provider_code: request
+                    .vendor
+                    .clone()
+                    .unwrap_or_else(|| "custom".to_string()),
+                provider_route_id: None,
+                model: None,
+                idempotency_key: request.idempotency_key.clone(),
+                request_json: request_json.clone(),
+                callback_url: None,
+            })
+            .await?;
 
         // Process task asynchronously
         let task_clone = task.clone();
@@ -297,21 +349,30 @@ impl SoundEffectService for SoundEffectServiceImpl {
         let self_clone = Self {
             task_repo: self.task_repo.clone(),
             artifact_repo: self.artifact_repo.clone(),
-            ai_engine: self.ai_engine.clone(),
+            generation_service: self.generation_service.clone(),
             drive_service: self.drive_service.clone(),
         };
 
         tokio::spawn(async move {
-            if let Err(e) = self_clone.process_sound_effect_task(&task_clone, &request_clone).await {
+            if let Err(e) = self_clone
+                .process_sound_effect_task(&task_clone, &request_clone)
+                .await
+            {
                 error!("Failed to process sound effect task: {}", e);
                 // Update task to failed
-                let _ = self_clone.task_repo.update(task_clone.id, UpdateTaskRequest {
-                    status: Some(TaskStatus::Failed),
-                    error_code: Some("PROCESSING_ERROR".to_string()),
-                    error_message: Some(e.to_string()),
-                    completed_at: Some(chrono::Utc::now()),
-                    ..Default::default()
-                }).await;
+                let _ = self_clone
+                    .task_repo
+                    .update(
+                        task_clone.id,
+                        UpdateTaskRequest {
+                            status: Some(TaskStatus::Failed),
+                            error_code: Some("PROCESSING_ERROR".to_string()),
+                            error_message: Some(e.to_string()),
+                            completed_at: Some(chrono::Utc::now()),
+                            ..Default::default()
+                        },
+                    )
+                    .await;
             }
         });
 
@@ -348,7 +409,9 @@ impl SoundEffectService for SoundEffectServiceImpl {
                     task_no: task.task_no,
                     status: task.status,
                     audio_url: result.as_ref().and_then(|r: &serde_json::Value| {
-                        r.get("audioUrl").and_then(|v| v.as_str()).map(|s| s.to_string())
+                        r.get("audioUrl")
+                            .and_then(|v| v.as_str())
+                            .map(|s| s.to_string())
                     }),
                     duration_ms: result.as_ref().and_then(|r: &serde_json::Value| {
                         r.get("durationMs").and_then(|v| v.as_u64())
@@ -357,13 +420,19 @@ impl SoundEffectService for SoundEffectServiceImpl {
                         r.get("fileSizeBytes").and_then(|v| v.as_u64())
                     }),
                     mime_type: result.as_ref().and_then(|r: &serde_json::Value| {
-                        r.get("mimeType").and_then(|v| v.as_str()).map(|s| s.to_string())
+                        r.get("mimeType")
+                            .and_then(|v| v.as_str())
+                            .map(|s| s.to_string())
                     }),
                     format: result.as_ref().and_then(|r: &serde_json::Value| {
-                        r.get("format").and_then(|v| v.as_str()).map(|s| s.to_string())
+                        r.get("format")
+                            .and_then(|v| v.as_str())
+                            .map(|s| s.to_string())
                     }),
                     sample_rate: result.as_ref().and_then(|r: &serde_json::Value| {
-                        r.get("sampleRate").and_then(|v| v.as_u64()).map(|v| v as u32)
+                        r.get("sampleRate")
+                            .and_then(|v| v.as_u64())
+                            .map(|v| v as u32)
                     }),
                 }))
             }
@@ -390,6 +459,8 @@ impl SoundEffectService for SoundEffectServiceImpl {
                         tenant_id: task.tenant_id,
                         organization_id: task.organization_id,
                         user_id: task.user_id,
+                        vendor: None,
+                        model: None,
                         description: String::new(),
                         duration_ms: None,
                         style: None,
@@ -397,6 +468,7 @@ impl SoundEffectService for SoundEffectServiceImpl {
                         audio_format: AudioFormat::WAV,
                         sample_rate: 44100,
                         idempotency_key: None,
+                        vendor_parameters: None,
                     });
 
                 let result = self.get_sound_effect_result(task_no).await?;
@@ -431,7 +503,10 @@ impl SoundEffectService for SoundEffectServiceImpl {
             created_before: None,
         };
 
-        let result = self.task_repo.list(filter, request.limit, request.offset).await?;
+        let result = self
+            .task_repo
+            .list(filter, request.limit, request.offset)
+            .await?;
 
         let mut tasks = Vec::new();
         for task in result.tasks {
@@ -449,11 +524,11 @@ impl SoundEffectService for SoundEffectServiceImpl {
         })
     }
 
-    async fn cancel_sound_effect(
-        &self,
-        task_no: &str,
-    ) -> SoundEffectServiceResult<()> {
-        let task = self.task_repo.get_by_task_no(task_no).await?
+    async fn cancel_sound_effect(&self, task_no: &str) -> SoundEffectServiceResult<()> {
+        let task = self
+            .task_repo
+            .get_by_task_no(task_no)
+            .await?
             .ok_or_else(|| SoundEffectServiceError::TaskNotFound {
                 task_no: task_no.to_string(),
             })?;
@@ -464,31 +539,40 @@ impl SoundEffectService for SoundEffectServiceImpl {
             });
         }
 
-        if task.status == TaskStatus::Succeeded.as_str() || task.status == TaskStatus::Failed.as_str() {
+        if task.status == TaskStatus::Succeeded.as_str()
+            || task.status == TaskStatus::Failed.as_str()
+        {
             return Err(SoundEffectServiceError::InvalidRequest {
                 message: "Cannot cancel completed task".to_string(),
             });
         }
 
-        self.task_repo.update(task.id, UpdateTaskRequest {
-            status: Some(TaskStatus::Cancelled),
-            completed_at: Some(chrono::Utc::now()),
-            ..Default::default()
-        }).await?;
+        self.task_repo
+            .update(
+                task.id,
+                UpdateTaskRequest {
+                    status: Some(TaskStatus::Cancelled),
+                    completed_at: Some(chrono::Utc::now()),
+                    ..Default::default()
+                },
+            )
+            .await?;
 
         Ok(())
     }
 
-    async fn get_presets(
-        &self,
-    ) -> SoundEffectServiceResult<SoundEffectPresetsResponse> {
+    async fn get_presets(&self) -> SoundEffectServiceResult<SoundEffectPresetsResponse> {
         let presets = vec![
             SoundEffectPreset {
                 preset_id: "rain".to_string(),
                 name: "Rain".to_string(),
                 description: "Gentle rain falling on a window".to_string(),
                 category: "nature".to_string(),
-                tags: vec!["rain".to_string(), "weather".to_string(), "ambient".to_string()],
+                tags: vec![
+                    "rain".to_string(),
+                    "weather".to_string(),
+                    "ambient".to_string(),
+                ],
                 default_duration_ms: 5000,
                 default_style: Some("gentle".to_string()),
             },
@@ -497,7 +581,11 @@ impl SoundEffectService for SoundEffectServiceImpl {
                 name: "Thunder".to_string(),
                 description: "Thunder rumbling in the distance".to_string(),
                 category: "nature".to_string(),
-                tags: vec!["thunder".to_string(), "storm".to_string(), "weather".to_string()],
+                tags: vec![
+                    "thunder".to_string(),
+                    "storm".to_string(),
+                    "weather".to_string(),
+                ],
                 default_duration_ms: 3000,
                 default_style: Some("dramatic".to_string()),
             },
@@ -506,7 +594,11 @@ impl SoundEffectService for SoundEffectServiceImpl {
                 name: "Ocean Waves".to_string(),
                 description: "Ocean waves crashing on the shore".to_string(),
                 category: "nature".to_string(),
-                tags: vec!["ocean".to_string(), "waves".to_string(), "beach".to_string()],
+                tags: vec![
+                    "ocean".to_string(),
+                    "waves".to_string(),
+                    "beach".to_string(),
+                ],
                 default_duration_ms: 8000,
                 default_style: Some("calm".to_string()),
             },
@@ -515,7 +607,11 @@ impl SoundEffectService for SoundEffectServiceImpl {
                 name: "Footsteps".to_string(),
                 description: "Footsteps walking on a hard surface".to_string(),
                 category: "human".to_string(),
-                tags: vec!["footsteps".to_string(), "walking".to_string(), "human".to_string()],
+                tags: vec![
+                    "footsteps".to_string(),
+                    "walking".to_string(),
+                    "human".to_string(),
+                ],
                 default_duration_ms: 2000,
                 default_style: Some("normal".to_string()),
             },
@@ -524,7 +620,11 @@ impl SoundEffectService for SoundEffectServiceImpl {
                 name: "Door Opening".to_string(),
                 description: "Door opening and closing".to_string(),
                 category: "household".to_string(),
-                tags: vec!["door".to_string(), "opening".to_string(), "household".to_string()],
+                tags: vec![
+                    "door".to_string(),
+                    "opening".to_string(),
+                    "household".to_string(),
+                ],
                 default_duration_ms: 1500,
                 default_style: Some("normal".to_string()),
             },
@@ -542,7 +642,11 @@ impl SoundEffectService for SoundEffectServiceImpl {
                 name: "Notification".to_string(),
                 description: "Notification bell sound".to_string(),
                 category: "ui".to_string(),
-                tags: vec!["notification".to_string(), "bell".to_string(), "alert".to_string()],
+                tags: vec![
+                    "notification".to_string(),
+                    "bell".to_string(),
+                    "alert".to_string(),
+                ],
                 default_duration_ms: 500,
                 default_style: Some("pleasant".to_string()),
             },
@@ -551,7 +655,11 @@ impl SoundEffectService for SoundEffectServiceImpl {
                 name: "Explosion".to_string(),
                 description: "Large explosion sound effect".to_string(),
                 category: "action".to_string(),
-                tags: vec!["explosion".to_string(), "boom".to_string(), "action".to_string()],
+                tags: vec![
+                    "explosion".to_string(),
+                    "boom".to_string(),
+                    "action".to_string(),
+                ],
                 default_duration_ms: 2000,
                 default_style: Some("dramatic".to_string()),
             },
@@ -560,9 +668,7 @@ impl SoundEffectService for SoundEffectServiceImpl {
         Ok(SoundEffectPresetsResponse { presets })
     }
 
-    async fn get_categories(
-        &self,
-    ) -> SoundEffectServiceResult<SoundEffectCategoriesResponse> {
+    async fn get_categories(&self) -> SoundEffectServiceResult<SoundEffectCategoriesResponse> {
         let categories = vec![
             SoundEffectCategory {
                 category_id: "nature".to_string(),

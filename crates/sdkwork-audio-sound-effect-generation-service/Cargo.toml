@@ -1,0 +1,14 @@
+[package]
+name = "sdkwork-audio-sound-effect-generation-service"
+version.workspace = true
+edition.workspace = true
+description = "Unified SDKWork sound-effect generation service entrypoint."
+
+[dependencies]
+async-trait.workspace = true
+sdkwork-audio-sound-effect-provider-spi.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
+sdkwork-audio-ai-engine-rust.workspace = true
+sdkwork-audio-sound-effect-provider-adapter.workspace = true

@@ -1,0 +1,19 @@
+[package]
+name = "sdkwork-audio-sound-effect-mcp-service"
+version.workspace = true
+edition.workspace = true
+description = "Model Context Protocol adapter for SDKWork sound-effect generation."
+
+[dependencies]
+base64.workspace = true
+rmcp.workspace = true
+schemars.workspace = true
+sdkwork-audio-sound-effect-generation-service.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+async-trait.workspace = true
+axum = { version = "0.8", default-features = false }
+tokio.workspace = true
+tower = { version = "0.5", features = ["util"] }

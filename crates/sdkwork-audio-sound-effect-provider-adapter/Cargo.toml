@@ -1,0 +1,12 @@
+[package]
+name = "sdkwork-audio-sound-effect-provider-adapter"
+version.workspace = true
+edition.workspace = true
+description = "Audio engine adapter for SDKWork sound-effect generation."
+
+[dependencies]
+async-trait.workspace = true
+sdkwork-audio-ai-engine-rust.workspace = true
+sdkwork-audio-sound-effect-provider-spi.workspace = true
+serde.workspace = true
+serde_json.workspace = true

@@ -13,6 +13,10 @@ members = [
     "crates/sdkwork-audio-transcription-service",
     "crates/sdkwork-audio-translation-service",
     "crates/sdkwork-audio-sound-effect-service",
+    "crates/sdkwork-audio-sound-effect-provider-spi",
+    "crates/sdkwork-audio-sound-effect-generation-service",
+    "crates/sdkwork-audio-sound-effect-mcp-service",
+    "crates/sdkwork-audio-sound-effect-provider-adapter",
 ]
 
 [workspace.package]
@@ -20,7 +24,11 @@ edition = "2021"
 version = "0.1.0"
 
 [workspace.dependencies]
+base64 = "0.22"
+rmcp = { version = "2.2.0", default-features = false, features = ["server", "macros", "schemars", "transport-io", "transport-streamable-http-server"] }
+schemars = "1"
 async-trait = "0.1"
+axum = "0.8"
 sdkwork-drive-config = { path = "../sdkwork-drive/crates/sdkwork-drive-config" }
 sdkwork-drive-storage-contract = { path = "../sdkwork-drive/crates/sdkwork-drive-storage-contract" }
 sdkwork-drive-storage-local = { path = "../sdkwork-drive/crates/sdkwork-drive-storage-local" }
@@ -35,6 +43,10 @@ sdkwork-audio-speech-service = { path = "crates/sdkwork-audio-speech-service" }
 sdkwork-audio-transcription-service = { path = "crates/sdkwork-audio-transcription-service" }
 sdkwork-audio-translation-service = { path = "crates/sdkwork-audio-translation-service" }
 sdkwork-audio-sound-effect-service = { path = "crates/sdkwork-audio-sound-effect-service" }
+sdkwork-audio-sound-effect-provider-spi = { path = "crates/sdkwork-audio-sound-effect-provider-spi" }
+sdkwork-audio-sound-effect-generation-service = { path = "crates/sdkwork-audio-sound-effect-generation-service" }
+sdkwork-audio-sound-effect-mcp-service = { path = "crates/sdkwork-audio-sound-effect-mcp-service" }
+sdkwork-audio-sound-effect-provider-adapter = { path = "crates/sdkwork-audio-sound-effect-provider-adapter" }
 sdkwork-audio-database-host = { path = "crates/sdkwork-audio-database-host" }
 sdkwork-database-config = { path = "../sdkwork-database/crates/sdkwork-database-config", package = "sdkwork-database-config" }
 sdkwork-database-lifecycle = { path = "../sdkwork-database/crates/sdkwork-database-lifecycle", package = "sdkwork-database-lifecycle" }
