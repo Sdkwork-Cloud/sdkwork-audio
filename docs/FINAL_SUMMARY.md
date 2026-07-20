@@ -113,7 +113,7 @@ The SDKWork Audio Application has been fully aligned with sdkwork-specs standard
 ### Immediate
 1. Install dependencies: `pnpm install`
 2. Run verification: `pnpm verify`
-3. Generate SDKs: `pnpm generate:sdk:typescript`
+3. Generate SDKs: `pnpm sdk:generate:typescript`
 
 ### Short-term
 1. Implement core business logic in Rust crates
@@ -145,7 +145,7 @@ pnpm typecheck
 pnpm verify
 
 # Generate SDK
-pnpm generate:sdk:typescript
+pnpm sdk:generate:typescript
 
 # Build
 pnpm build

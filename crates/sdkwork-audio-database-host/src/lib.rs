@@ -30,8 +30,8 @@ pub async fn bootstrap_audio_database(pool: DatabasePool) -> Result<AudioDatabas
     let manifest = DatabaseManifest::from_file(module.manifest_path())
         .map_err(|error| format!("read audio database manifest failed: {error}"))?;
     let options = lifecycle_options_from_env("AUDIO", &manifest);
-    let orchestrator = LifecycleOrchestrator::new(pool.clone(), module.clone())
-        .with_applied_by("sdkwork-audio");
+    let orchestrator =
+        LifecycleOrchestrator::new(pool.clone(), module.clone()).with_applied_by("sdkwork-audio");
 
     orchestrator
         .init()
@@ -91,6 +91,8 @@ mod tests {
             .as_nanos();
         let schema = format!("sdkwork_audio_test_{}_{}", std::process::id(), unique);
         let quoted_schema = format!("\"{schema}\"");
+        let previous_schema = std::env::var_os("SDKWORK_AUDIO_DATABASE_SCHEMA");
+        std::env::set_var("SDKWORK_AUDIO_DATABASE_SCHEMA", &schema);
 
         let admin_pool = PgPoolOptions::new()
             .max_connections(1)
@@ -143,6 +145,10 @@ mod tests {
             .await
             .expect("drop isolated PostgreSQL test schema");
         admin_pool.close().await;
+        match previous_schema {
+            Some(value) => std::env::set_var("SDKWORK_AUDIO_DATABASE_SCHEMA", value),
+            None => std::env::remove_var("SDKWORK_AUDIO_DATABASE_SCHEMA"),
+        }
 
         bootstrap_result.expect("Audio PostgreSQL lifecycle bootstrap must succeed");
         assert_eq!(table_count, 14, "all registered Audio tables must exist");
