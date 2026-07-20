@@ -4,8 +4,6 @@ members = [
     "crates/sdkwork-api-audio-standalone-gateway",
     "crates/sdkwork-api-audio-assembly",
     "crates/sdkwork-audio-database-host",
-    "crates/sdkwork-routes-audio-app-api",
-    "crates/sdkwork-routes-audio-backend-api",
     "crates/sdkwork-audio-artifact-drive-service",
     "crates/sdkwork-audio-generation-repository-sqlx",
     "crates/sdkwork-audio-realtime-rust",
@@ -25,6 +23,8 @@ edition = "2021"
 version = "0.1.0"
 
 [workspace.dependencies]
+sdkwork-web-bootstrap = { path = "../sdkwork-web-framework/crates/sdkwork-web-bootstrap" }
+sdkwork-api-audio-assembly = { path = "crates/sdkwork-api-audio-assembly" }
 base64 = "0.22"
 rmcp = { version = "2.2.0", default-features = false, features = ["server", "macros", "schemars", "transport-io", "transport-streamable-http-server"] }
 schemars = "1"
@@ -34,8 +34,6 @@ sdkwork-drive-config = { path = "../sdkwork-drive/crates/sdkwork-drive-config" }
 sdkwork-drive-storage-contract = { path = "../sdkwork-drive/crates/sdkwork-drive-storage-contract" }
 sdkwork-drive-storage-local = { path = "../sdkwork-drive/crates/sdkwork-drive-storage-local" }
 sdkwork-drive-workspace-service = { path = "../sdkwork-drive/crates/sdkwork-drive-workspace-service" }
-sdkwork-routes-audio-app-api = { path = "crates/sdkwork-routes-audio-app-api" }
-sdkwork-routes-audio-backend-api = { path = "crates/sdkwork-routes-audio-backend-api" }
 sdkwork-audio-artifact-drive-service = { path = "crates/sdkwork-audio-artifact-drive-service" }
 sdkwork-audio-generation-repository-sqlx = { path = "crates/sdkwork-audio-generation-repository-sqlx" }
 sdkwork-audio-realtime-rust = { path = "crates/sdkwork-audio-realtime-rust" }
