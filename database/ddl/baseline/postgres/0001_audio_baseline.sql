@@ -374,7 +374,6 @@ CREATE INDEX idx_audio_task_event_task ON audio_task_event(task_id, created_at D
 CREATE INDEX idx_audio_task_event_type ON audio_task_event(event_type);
 
 CREATE INDEX idx_audio_audio_artifact_task ON audio_audio_artifact(task_id, artifact_index);
-CREATE INDEX idx_audio_audio_artifact_tenant ON audio_audio_artifact(tenant_id);
 
 CREATE INDEX idx_audio_artifact_drive_sync_artifact ON audio_artifact_drive_sync(artifact_id);
 CREATE INDEX idx_audio_artifact_drive_sync_status ON audio_artifact_drive_sync(sync_status);

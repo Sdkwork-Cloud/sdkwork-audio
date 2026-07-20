@@ -1518,6 +1518,8 @@ dependencies = [
  "sdkwork-database-lifecycle",
  "sdkwork-database-spi",
  "sdkwork-database-sqlx",
+ "sqlx",
+ "tokio",
 ]
 
 [[package]]

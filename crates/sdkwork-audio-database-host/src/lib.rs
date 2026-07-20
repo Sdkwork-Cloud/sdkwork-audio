@@ -68,3 +68,83 @@ fn resolve_app_root() -> PathBuf {
                 .unwrap_or_else(|_| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../.."))
         })
 }
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    use sdkwork_database_config::{DatabaseConfig, DatabaseEngine};
+    use sdkwork_database_sqlx::{DatabasePool, PoolContext};
+    use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
+
+    use super::bootstrap_audio_database;
+
+    #[tokio::test]
+    #[ignore = "requires SDKWORK_AUDIO_TEST_DATABASE_URL"]
+    async fn postgres_lifecycle_bootstrap_executes_complete_audio_baseline() {
+        let database_url = std::env::var("SDKWORK_AUDIO_TEST_DATABASE_URL")
+            .expect("SDKWORK_AUDIO_TEST_DATABASE_URL must point to a PostgreSQL test database");
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("system time must be after the Unix epoch")
+            .as_nanos();
+        let schema = format!("sdkwork_audio_test_{}_{}", std::process::id(), unique);
+        let quoted_schema = format!("\"{schema}\"");
+
+        let admin_pool = PgPoolOptions::new()
+            .max_connections(1)
+            .connect(&database_url)
+            .await
+            .expect("connect to PostgreSQL test database");
+        sqlx::query(&format!("CREATE SCHEMA {quoted_schema}"))
+            .execute(&admin_pool)
+            .await
+            .expect("create isolated PostgreSQL test schema");
+
+        let connect_options = PgConnectOptions::from_str(&database_url)
+            .expect("parse PostgreSQL test database URL")
+            .options([("search_path", schema.as_str())]);
+        let scoped_pool = PgPoolOptions::new()
+            .max_connections(1)
+            .connect_with(connect_options)
+            .await
+            .expect("connect to isolated PostgreSQL test schema");
+        let pool = DatabasePool::Postgres(
+            scoped_pool,
+            PoolContext {
+                config: DatabaseConfig {
+                    engine: DatabaseEngine::Postgres,
+                    url: database_url,
+                    max_connections: 1,
+                    min_connections: 0,
+                    ..Default::default()
+                },
+            },
+        );
+
+        let bootstrap_result = bootstrap_audio_database(pool.clone()).await;
+        let table_count = match &bootstrap_result {
+            Ok(_) => {
+                sqlx::query_scalar::<_, i64>(
+                    "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = $1 AND table_name LIKE 'audio_%'",
+                )
+                .bind(&schema)
+                .fetch_one(pool.as_postgres().expect("PostgreSQL pool"))
+                .await
+                .expect("count materialized Audio tables")
+            }
+            Err(_) => 0,
+        };
+
+        pool.close().await;
+        sqlx::query(&format!("DROP SCHEMA {quoted_schema} CASCADE"))
+            .execute(&admin_pool)
+            .await
+            .expect("drop isolated PostgreSQL test schema");
+        admin_pool.close().await;
+
+        bootstrap_result.expect("Audio PostgreSQL lifecycle bootstrap must succeed");
+        assert_eq!(table_count, 14, "all registered Audio tables must exist");
+    }
+}
