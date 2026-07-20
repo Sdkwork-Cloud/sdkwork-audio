@@ -3,7 +3,6 @@ resolver = "2"
 members = [
     "crates/sdkwork-api-audio-standalone-gateway",
     "crates/sdkwork-api-audio-assembly",
-    "crates/sdkwork-api-audio-assembly",
     "crates/sdkwork-audio-database-host",
     "crates/sdkwork-routes-audio-app-api",
     "crates/sdkwork-routes-audio-backend-api",
