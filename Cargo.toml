@@ -1,7 +1,8 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/sdkwork-audio-gateway-assembly",
+    "crates/sdkwork-api-audio-assembly",
+    "crates/sdkwork-api-audio-assembly",
     "crates/sdkwork-audio-database-host",
     "crates/sdkwork-routes-audio-app-api",
     "crates/sdkwork-routes-audio-backend-api",

@@ -1,0 +1,32 @@
+{
+  "kind": "sdkwork.api.assembly",
+  "schemaVersion": 1,
+  "applicationCode": "audio",
+  "apiMode": "served",
+  "packageName": "sdkwork-api-audio-assembly",
+  "crateDir": "crates/sdkwork-api-audio-assembly",
+  "routeCrates": [
+    {
+      "packageName": "sdkwork-routes-audio-app-api",
+      "memberDir": "crates/sdkwork-routes-audio-app-api",
+      "libName": "sdkwork_routes_audio_app_api",
+      "surface": "app-api",
+      "pathPrefix": "/app/v3/api/audio",
+      "mountOrder": 0,
+      "componentRef": "crates/sdkwork-routes-audio-app-api/specs/component.spec.json",
+      "routeManifestRef": "crates/sdkwork-routes-audio-app-api/sdks/_route-manifests/app-api/sdkwork-routes-audio-app-api.route-manifest.json",
+      "sourceRef": "crates/sdkwork-routes-audio-app-api/Cargo.toml"
+    },
+    {
+      "packageName": "sdkwork-routes-audio-backend-api",
+      "memberDir": "crates/sdkwork-routes-audio-backend-api",
+      "libName": "sdkwork_routes_audio_backend_api",
+      "surface": "backend-api",
+      "pathPrefix": "/backend/v3/api/audio",
+      "mountOrder": 1,
+      "componentRef": "crates/sdkwork-routes-audio-backend-api/specs/component.spec.json",
+      "routeManifestRef": "crates/sdkwork-routes-audio-backend-api/sdks/_route-manifests/backend-api/sdkwork-routes-audio-backend-api.route-manifest.json",
+      "sourceRef": "crates/sdkwork-routes-audio-backend-api/Cargo.toml"
+    }
+  ]
+}
