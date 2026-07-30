@@ -72,7 +72,6 @@ fn resolve_app_root() -> PathBuf {
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;
-    use std::time::{SystemTime, UNIX_EPOCH};
 
     use sdkwork_database_config::{DatabaseConfig, DatabaseEngine};
     use sdkwork_database_sqlx::{DatabasePool, PoolContext};
@@ -81,28 +80,27 @@ mod tests {
     use super::bootstrap_audio_database;
 
     #[tokio::test]
-    #[ignore = "requires SDKWORK_AUDIO_TEST_DATABASE_URL"]
+    #[ignore = "requires an isolated SDKWORK_DATABASE_* PostgreSQL test profile"]
     async fn postgres_lifecycle_bootstrap_executes_complete_audio_baseline() {
-        let database_url = std::env::var("SDKWORK_AUDIO_TEST_DATABASE_URL")
-            .expect("SDKWORK_AUDIO_TEST_DATABASE_URL must point to a PostgreSQL test database");
-        let unique = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("system time must be after the Unix epoch")
-            .as_nanos();
-        let schema = format!("sdkwork_audio_test_{}_{}", std::process::id(), unique);
-        let quoted_schema = format!("\"{schema}\"");
-        let previous_schema = std::env::var_os("SDKWORK_AUDIO_DATABASE_SCHEMA");
-        std::env::set_var("SDKWORK_AUDIO_DATABASE_SCHEMA", &schema);
+        let database_url = std::env::var("SDKWORK_DATABASE_URL")
+            .expect("SDKWORK_DATABASE_URL must point to an isolated PostgreSQL test database");
+        let schema = std::env::var("SDKWORK_DATABASE_SCHEMA")
+            .expect("SDKWORK_DATABASE_SCHEMA must equal the isolated test database name");
+        assert!(
+            schema == "sdkwork_ai_test" || schema.starts_with("sdkwork_ai_test_"),
+            "Audio integration tests require sdkwork_ai_test or sdkwork_ai_test_<run_id>"
+        );
 
         let admin_pool = PgPoolOptions::new()
             .max_connections(1)
             .connect(&database_url)
             .await
             .expect("connect to PostgreSQL test database");
-        sqlx::query(&format!("CREATE SCHEMA {quoted_schema}"))
-            .execute(&admin_pool)
+        let database_name = sqlx::query_scalar::<_, String>("SELECT current_database()")
+            .fetch_one(&admin_pool)
             .await
-            .expect("create isolated PostgreSQL test schema");
+            .expect("read PostgreSQL test database name");
+        assert_eq!(database_name, schema, "database and schema must be identical");
 
         let connect_options = PgConnectOptions::from_str(&database_url)
             .expect("parse PostgreSQL test database URL")
@@ -140,15 +138,7 @@ mod tests {
         };
 
         pool.close().await;
-        sqlx::query(&format!("DROP SCHEMA {quoted_schema} CASCADE"))
-            .execute(&admin_pool)
-            .await
-            .expect("drop isolated PostgreSQL test schema");
         admin_pool.close().await;
-        match previous_schema {
-            Some(value) => std::env::set_var("SDKWORK_AUDIO_DATABASE_SCHEMA", value),
-            None => std::env::remove_var("SDKWORK_AUDIO_DATABASE_SCHEMA"),
-        }
 
         bootstrap_result.expect("Audio PostgreSQL lifecycle bootstrap must succeed");
         assert_eq!(table_count, 14, "all registered Audio tables must exist");

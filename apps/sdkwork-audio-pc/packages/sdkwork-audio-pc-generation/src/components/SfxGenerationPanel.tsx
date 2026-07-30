@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Activity, AudioWaveform, Clock3, Repeat, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { Activity, AudioWaveform, Clock3, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { SdkworkStudioGenerationBottomBar } from '@sdkwork/generations-pc-studio/react';
 import {

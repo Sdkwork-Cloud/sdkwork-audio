@@ -1,6 +1,9 @@
-import type { SdkworkGenerationSerializedAssetConfig } from './generation-asset-config';
+import type {
+  SdkworkGenerationPricedModel,
+  SdkworkGenerationSerializedAssetConfig,
+} from './generation-asset-config';
 
-export interface AudioGenerationModelOption {
+export interface AudioGenerationModelOption extends Partial<SdkworkGenerationPricedModel> {
   id: string;
   name?: string;
   displayName?: string;
