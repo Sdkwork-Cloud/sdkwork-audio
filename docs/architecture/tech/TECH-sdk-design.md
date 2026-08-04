@@ -41,7 +41,7 @@ This document defines the SDK architecture for the SDKWork Audio Application. It
 │                                                              │
 │  ┌─────────────────────────────────────────────────┐        │
 │  │              SDK Dependencies                    │        │
-│  │  - clawrouter-open-sdk (AI generation)          │        │
+│  │  - cloudrouter-open-sdk (AI generation)          │        │
 │  │  - drive-sdk (file storage)                     │        │
 │  │  - iam-sdk (authentication)                     │        │
 │  │  - media-resource-sdk (media management)        │        │
@@ -129,14 +129,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\sdks\sdkwork-audio-backend
   "standardProfile": "sdkwork-v3",
   "sdkDependencies": [
     {
-      "workspace": "clawrouter-open-sdk",
+      "workspace": "cloudrouter-open-sdk",
       "role": "ai-audio-generation-provider-capability",
       "required": true,
       "dependencyMode": "consumer-sdk",
       "apiPrefix": null,
       "generatedTransportImportPolicy": "forbidden",
       "packageByLanguage": {
-        "typescript": "@sdkwork/clawrouter-open-sdk"
+        "typescript": "@sdkwork/cloudrouter-open-sdk"
       }
     },
     {
@@ -506,14 +506,14 @@ try {
 {
   "sdkDependencies": [
     {
-      "workspace": "clawrouter-open-sdk",
+      "workspace": "cloudrouter-open-sdk",
       "role": "ai-audio-generation-provider-capability",
       "required": true,
       "dependencyMode": "consumer-sdk",
       "apiPrefix": null,
       "generatedTransportImportPolicy": "forbidden",
       "packageByLanguage": {
-        "typescript": "@sdkwork/clawrouter-open-sdk"
+        "typescript": "@sdkwork/cloudrouter-open-sdk"
       }
     },
     {

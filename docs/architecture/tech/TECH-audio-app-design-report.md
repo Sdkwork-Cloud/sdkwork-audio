@@ -219,7 +219,7 @@ sdkwork-audio/
 ### 2.4 Integration Points
 
 - **Drive Integration**: Audio asset storage via SDKWork Drive
-- **ClawRouter**: AI provider routing and load balancing
+- **CloudRouter**: AI provider routing and load balancing
 - **AppBase IAM**: Authentication and authorization
 - **MediaResource**: Media asset management
 - **Real-time Engine**: WebSocket and streaming support
@@ -313,7 +313,7 @@ Generated OpenAPI specifications will be available at:
 │                                                              │
 │  ┌─────────────────────────────────────────────────┐        │
 │  │              SDK Dependencies                    │        │
-│  │  - clawrouter-open-sdk (AI generation)          │        │
+│  │  - cloudrouter-open-sdk (AI generation)          │        │
 │  │  - drive-sdk (file storage)                     │        │
 │  │  - iam-sdk (authentication)                     │        │
 │  │  - media-resource-sdk (media management)        │        │
@@ -369,7 +369,7 @@ await adminClient.providerRoutes.create({
 {
   "sdkDependencies": [
     {
-      "workspace": "clawrouter-open-sdk",
+      "workspace": "cloudrouter-open-sdk",
       "role": "ai-audio-generation-provider-capability",
       "operations": ["createSpeech", "createTranscription", "createTranslation"]
     },

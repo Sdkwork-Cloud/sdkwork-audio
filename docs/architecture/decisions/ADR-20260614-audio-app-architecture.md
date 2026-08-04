@@ -15,7 +15,7 @@ Key requirements:
 3. Professional audio workspace with waveform visualization
 4. Multi-tenant architecture for SaaS deployment
 5. SDK-first design with generated clients
-6. Integration with existing SDKWork platform (Drive, IAM, ClawRouter)
+6. Integration with existing SDKWork platform (Drive, IAM, CloudRouter)
 
 ## Decision
 
@@ -66,7 +66,7 @@ sdkwork-audio/
 
 ### 6. Integration Points
 - **Drive Integration**: Audio asset storage via SDKWork Drive
-- **ClawRouter**: AI provider routing and load balancing
+- **CloudRouter**: AI provider routing and load balancing
 - **AppBase IAM**: Authentication and authorization
 - **MediaResource**: Media asset management
 
@@ -108,7 +108,7 @@ sdkwork-audio/
 1. **Database Schema**: Verify all tables follow DATABASE_SPEC.md
 2. **API Contracts**: Verify all endpoints follow API_SPEC.md
 3. **SDK Generation**: Verify SDKs generate without warnings
-4. **Integration Tests**: Verify integration with Drive, IAM, ClawRouter
+4. **Integration Tests**: Verify integration with Drive, IAM, CloudRouter
 5. **Performance Tests**: Verify latency and throughput targets
 6. **Security Audit**: Verify security compliance
 

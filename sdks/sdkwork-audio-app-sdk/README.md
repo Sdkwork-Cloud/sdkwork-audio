@@ -38,7 +38,7 @@ This SDK family provides client libraries for the SDKWork Audio App API, which i
 
 ## SDK Dependencies
 
-- `clawrouter-open-sdk`: AI audio generation provider capability
+- `cloudrouter-open-sdk`: AI audio generation provider capability
 - `sdkwork-drive-sdk`: Audio storage capability
 - `sdkwork-iam-sdk`: Authentication capability
 

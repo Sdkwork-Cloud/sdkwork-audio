@@ -239,7 +239,7 @@ The SDKWork Audio Application has been successfully implemented with all core se
 
 - **Languages**: 12 (TypeScript, Dart, Python, Go, Java, Kotlin, Swift, C#, Flutter, Rust, PHP, Ruby)
 - **Operations**: 16
-- **Dependencies**: clawrouter-open-sdk, sdkwork-drive-sdk, sdkwork-iam-sdk
+- **Dependencies**: cloudrouter-open-sdk, sdkwork-drive-sdk, sdkwork-iam-sdk
 
 ### Backend SDK (@sdkwork/audio-backend-sdk)
 

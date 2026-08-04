@@ -20,7 +20,7 @@ conversion.
 
 The SPI owns stable vendor, model, common request, versioned vendor-parameter, dispatch, and
 normalized result contracts. Engine request conversion and engine errors remain in the adapter.
-ClawRouter is not a public vendor or provider identity and is not a dependency of this capability,
+CloudRouter is not a public vendor or provider identity and is not a dependency of this capability,
 because no typed generated SDK route exists.
 
 A future typed SDK adapter may replace or coexist with the engine adapter through the same SPI and

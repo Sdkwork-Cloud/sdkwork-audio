@@ -97,7 +97,7 @@ Architecture decision record:
 
 ### Integration Points
 - **Drive Integration**: Audio asset storage
-- **ClawRouter**: AI provider routing
+- **CloudRouter**: AI provider routing
 - **AppBase IAM**: Authentication and authorization
 - **MediaResource**: Media asset management
 

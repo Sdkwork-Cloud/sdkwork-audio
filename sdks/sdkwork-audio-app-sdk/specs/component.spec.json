@@ -57,14 +57,14 @@
   },
   "sdkDependencies": [
     {
-      "workspace": "clawrouter-open-sdk",
+      "workspace": "cloudrouter-open-sdk",
       "role": "ai-audio-generation-provider-capability",
       "required": true,
       "dependencyMode": "consumer-sdk",
       "apiPrefix": null,
       "generatedTransportImportPolicy": "forbidden",
       "packageByLanguage": {
-        "typescript": "@sdkwork/clawrouter-open-sdk"
+        "typescript": "@sdkwork/cloudrouter-open-sdk"
       }
     },
     {
