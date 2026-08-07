@@ -364,25 +364,25 @@ CREATE TABLE IF NOT EXISTS audio_workspace_clip (
 );
 
 -- Indexes
-CREATE INDEX idx_audio_generation_task_tenant_user ON audio_generation_task(tenant_id, user_id);
-CREATE INDEX idx_audio_generation_task_status ON audio_generation_task(tenant_id, status);
-CREATE INDEX idx_audio_generation_task_operation ON audio_generation_task(operation_type);
-CREATE INDEX idx_audio_generation_task_provider ON audio_generation_task(provider_code, provider_task_id);
-CREATE INDEX idx_audio_generation_task_created ON audio_generation_task(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audio_generation_task_tenant_user ON audio_generation_task(tenant_id, user_id);
+CREATE INDEX IF NOT EXISTS idx_audio_generation_task_status ON audio_generation_task(tenant_id, status);
+CREATE INDEX IF NOT EXISTS idx_audio_generation_task_operation ON audio_generation_task(operation_type);
+CREATE INDEX IF NOT EXISTS idx_audio_generation_task_provider ON audio_generation_task(provider_code, provider_task_id);
+CREATE INDEX IF NOT EXISTS idx_audio_generation_task_created ON audio_generation_task(tenant_id, created_at DESC);
 
-CREATE INDEX idx_audio_task_event_task ON audio_task_event(task_id, created_at DESC);
-CREATE INDEX idx_audio_task_event_type ON audio_task_event(event_type);
+CREATE INDEX IF NOT EXISTS idx_audio_task_event_task ON audio_task_event(task_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audio_task_event_type ON audio_task_event(event_type);
 
-CREATE INDEX idx_audio_audio_artifact_task ON audio_audio_artifact(task_id, artifact_index);
+CREATE INDEX IF NOT EXISTS idx_audio_audio_artifact_task ON audio_audio_artifact(task_id, artifact_index);
 
-CREATE INDEX idx_audio_artifact_drive_sync_artifact ON audio_artifact_drive_sync(artifact_id);
-CREATE INDEX idx_audio_artifact_drive_sync_status ON audio_artifact_drive_sync(sync_status);
+CREATE INDEX IF NOT EXISTS idx_audio_artifact_drive_sync_artifact ON audio_artifact_drive_sync(artifact_id);
+CREATE INDEX IF NOT EXISTS idx_audio_artifact_drive_sync_status ON audio_artifact_drive_sync(sync_status);
 
-CREATE INDEX idx_audio_voice_tenant ON audio_voice(tenant_id, status);
-CREATE INDEX idx_audio_voice_language ON audio_voice(language);
+CREATE INDEX IF NOT EXISTS idx_audio_voice_tenant ON audio_voice(tenant_id, status);
+CREATE INDEX IF NOT EXISTS idx_audio_voice_language ON audio_voice(language);
 
-CREATE INDEX idx_audio_realtime_session_user ON audio_realtime_session(user_id, status);
-CREATE INDEX idx_audio_realtime_session_tenant ON audio_realtime_session(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audio_realtime_session_user ON audio_realtime_session(user_id, status);
+CREATE INDEX IF NOT EXISTS idx_audio_realtime_session_tenant ON audio_realtime_session(tenant_id, created_at DESC);
 
-CREATE INDEX idx_audio_workspace_user ON audio_workspace(user_id, status);
-CREATE INDEX idx_audio_workspace_tenant ON audio_workspace(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audio_workspace_user ON audio_workspace(user_id, status);
+CREATE INDEX IF NOT EXISTS idx_audio_workspace_tenant ON audio_workspace(tenant_id, created_at DESC);

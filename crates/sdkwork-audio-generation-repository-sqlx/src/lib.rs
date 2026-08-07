@@ -32,7 +32,7 @@ pub async fn create_pool_from_env(service_name: &str) -> Result<Option<DatabaseP
     sdkwork_database_sqlx::create_pool_from_env(service_name).await
 }
 
-/// Run migrations for SQLite dev pools. PostgreSQL uses application-root `database/` lifecycle.
+/// Run migrations. PostgreSQL uses application-root `database/` lifecycle.
 pub async fn run_migrations(pool: &DatabasePool) -> Result<(), sqlx::Error> {
     match pool {
         DatabasePool::Postgres(_, _) => {
@@ -41,9 +41,8 @@ pub async fn run_migrations(pool: &DatabasePool) -> Result<(), sqlx::Error> {
                 .map_err(|error| sqlx::Error::Configuration(error.into()))?;
             Ok(())
         }
-        DatabasePool::Sqlite(sqlite_pool, _) => sqlx::migrate!("./migrations")
-            .run(sqlite_pool)
-            .await
-            .map_err(sqlx::Error::from),
+        _ => Err(sqlx::Error::Configuration(
+            "audio repository requires a PostgreSQL pool (DATABASE_SPEC: authoritative-server persistence is PostgreSQL only)".into(),
+        )),
     }
 }

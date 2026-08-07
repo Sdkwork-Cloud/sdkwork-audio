@@ -229,28 +229,6 @@ impl TranslationServiceImpl {
     }
 }
 
-/// Default implementation for UpdateTaskRequest
-impl Default for UpdateTaskRequest {
-    fn default() -> Self {
-        Self {
-            status: None,
-            progress: None,
-            provider_code: None,
-            provider_route_id: None,
-            provider_task_id: None,
-            provider_request_json: None,
-            provider_response_json: None,
-            result_json: None,
-            error_code: None,
-            error_message: None,
-            callback_status: None,
-            submitted_at: None,
-            completed_at: None,
-            expires_at: None,
-        }
-    }
-}
-
 #[async_trait]
 impl TranslationService for TranslationServiceImpl {
     async fn create_translation(

@@ -152,6 +152,27 @@ pub struct UpdateTaskRequest {
     pub expires_at: Option<DateTime<Utc>>,
 }
 
+impl Default for UpdateTaskRequest {
+    fn default() -> Self {
+        Self {
+            status: None,
+            progress: None,
+            provider_code: None,
+            provider_route_id: None,
+            provider_task_id: None,
+            provider_request_json: None,
+            provider_response_json: None,
+            result_json: None,
+            error_code: None,
+            error_message: None,
+            callback_status: None,
+            submitted_at: None,
+            completed_at: None,
+            expires_at: None,
+        }
+    }
+}
+
 /// Task filter
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TaskFilter {

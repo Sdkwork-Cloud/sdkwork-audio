@@ -63,7 +63,7 @@ fn test_speech_synthesis_request_serialization() {
     let json = serde_json::to_string(&request).unwrap();
     let deserialized: SpeechSynthesisRequest = serde_json::from_str(&json).unwrap();
 
-    assert_eq!(deserialized.tenant_id, 1);
+    assert_eq!(deserialized.tenant_id, 100_001);
     assert_eq!(deserialized.text, "Hello, world!");
     assert_eq!(deserialized.text_format, TextFormat::Plain);
     assert_eq!(deserialized.language, Some("en".to_string()));
@@ -152,7 +152,7 @@ fn test_voice_list_request_serialization() {
     let json = serde_json::to_string(&request).unwrap();
     let deserialized: VoiceListRequest = serde_json::from_str(&json).unwrap();
 
-    assert_eq!(deserialized.tenant_id, 1);
+    assert_eq!(deserialized.tenant_id, 100_001);
     assert_eq!(deserialized.user_id, Some(1));
     assert_eq!(deserialized.language, Some("en".to_string()));
     assert_eq!(deserialized.limit, 20);

@@ -15,6 +15,11 @@ use sdkwork_audio_generation_repository_sqlx::repositories::task::*;
 use sdkwork_audio_generation_repository_sqlx::repositories::artifact::*;
 use sdkwork_audio_generation_repository_sqlx::repositories::voice::*;
 use sdkwork_audio_ai_engine_rust::*;
+// Aliases for the ai-engine request/result types (distinct from the service's own models)
+use sdkwork_audio_ai_engine_rust::{
+    SpeechSynthesisRequest as EngineSpeechSynthesisRequest,
+    SpeechSynthesisResult as EngineSpeechSynthesisResult,
+};
 use sdkwork_audio_artifact_drive_service::*;
 
 // Mock Task Repository
@@ -410,9 +415,9 @@ impl AudioAiEngine for MockAiEngine {
 
     async fn synthesize_speech(
         &self,
-        _request: SpeechSynthesisRequest,
-    ) -> Result<SpeechSynthesisResult, Box<dyn std::error::Error + Send + Sync>> {
-        Ok(SpeechSynthesisResult {
+        _request: EngineSpeechSynthesisRequest,
+    ) -> Result<EngineSpeechSynthesisResult, Box<dyn std::error::Error + Send + Sync>> {
+        Ok(EngineSpeechSynthesisResult {
             audio_data: vec![0; 1024],
             mime_type: "audio/mpeg".to_string(),
             duration_ms: 2500,
@@ -493,8 +498,8 @@ fn create_service() -> SpeechServiceImpl {
     SpeechServiceImpl::new(task_repo, artifact_repo, voice_repo, ai_engine, drive_service)
 }
 
-fn create_request() -> SpeechSynthesisRequest {
-    SpeechSynthesisRequest {
+fn create_request() -> sdkwork_audio_speech_service::models::SpeechSynthesisRequest {
+    sdkwork_audio_speech_service::models::SpeechSynthesisRequest {
         tenant_id: 100_001,
         organization_id: 0,
         user_id: 1,
