@@ -18,26 +18,32 @@
 
 BEGIN;
 
+ALTER TABLE audio_generation_task ADD COLUMN IF NOT EXISTS organization_id BIGINT NOT NULL DEFAULT 0;
 UPDATE audio_generation_task SET organization_id = 0 WHERE organization_id IS NULL;
 ALTER TABLE audio_generation_task ALTER COLUMN organization_id SET DEFAULT 0;
 ALTER TABLE audio_generation_task ALTER COLUMN organization_id SET NOT NULL;
 
+ALTER TABLE audio_artifact_drive_sync ADD COLUMN IF NOT EXISTS organization_id BIGINT NOT NULL DEFAULT 0;
 UPDATE audio_artifact_drive_sync SET organization_id = 0 WHERE organization_id IS NULL;
 ALTER TABLE audio_artifact_drive_sync ALTER COLUMN organization_id SET DEFAULT 0;
 ALTER TABLE audio_artifact_drive_sync ALTER COLUMN organization_id SET NOT NULL;
 
+ALTER TABLE audio_request_log ADD COLUMN IF NOT EXISTS organization_id BIGINT NOT NULL DEFAULT 0;
 UPDATE audio_request_log SET organization_id = 0 WHERE organization_id IS NULL;
 ALTER TABLE audio_request_log ALTER COLUMN organization_id SET DEFAULT 0;
 ALTER TABLE audio_request_log ALTER COLUMN organization_id SET NOT NULL;
 
+ALTER TABLE audio_voice ADD COLUMN IF NOT EXISTS organization_id BIGINT NOT NULL DEFAULT 0;
 UPDATE audio_voice SET organization_id = 0 WHERE organization_id IS NULL;
 ALTER TABLE audio_voice ALTER COLUMN organization_id SET DEFAULT 0;
 ALTER TABLE audio_voice ALTER COLUMN organization_id SET NOT NULL;
 
+ALTER TABLE audio_realtime_session ADD COLUMN IF NOT EXISTS organization_id BIGINT NOT NULL DEFAULT 0;
 UPDATE audio_realtime_session SET organization_id = 0 WHERE organization_id IS NULL;
 ALTER TABLE audio_realtime_session ALTER COLUMN organization_id SET DEFAULT 0;
 ALTER TABLE audio_realtime_session ALTER COLUMN organization_id SET NOT NULL;
 
+ALTER TABLE audio_workspace ADD COLUMN IF NOT EXISTS organization_id BIGINT NOT NULL DEFAULT 0;
 UPDATE audio_workspace SET organization_id = 0 WHERE organization_id IS NULL;
 ALTER TABLE audio_workspace ALTER COLUMN organization_id SET DEFAULT 0;
 ALTER TABLE audio_workspace ALTER COLUMN organization_id SET NOT NULL;
